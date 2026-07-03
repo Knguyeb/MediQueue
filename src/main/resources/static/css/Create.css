@@ -1,0 +1,209 @@
+/* ========================================================
+   KẾ THỪA BIẾN TỪ _Layout.css (Dark Theme & Medical Purple)
+   ======================================================== */
+:root {
+    --danger-color: #ef4444; /* Đỏ mềm mại cho nút Hủy/Quay lại */
+    --cyan-accent: #06b6d4;  /* Xanh ngọc y tế */
+}
+
+/* Hiệu ứng trượt lên */
+.fade-in-up {
+    animation: fadeInUp 0.5s ease-out forwards;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ==== Tiêu đề & Container ==== */
+.text-subtitle {
+    color: var(--cyan-accent); /* Đổi từ Cam sang Xanh Ngọc */
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+}
+
+.page-title {
+    color: var(--white);
+    font-weight: 800;
+    text-transform: uppercase;
+    text-shadow: 0 0 10px var(--primary-glow);
+}
+
+.glass-form-container {
+    background: var(--surface-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 40px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.section-header {
+    color: var(--primary-color); /* Đổi từ Vàng sang Tím */
+    font-weight: 700;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed var(--border-color);
+    margin-bottom: 20px;
+}
+
+/* ==== Form Inputs ==== */
+.form-label-luxury {
+    color: var(--text-main);
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: inline-block;
+}
+
+.luxury-input-group .input-group-text {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--border-color);
+    border-right: none;
+    color: var(--cyan-accent); /* Icon form màu Xanh Ngọc */
+}
+
+.luxury-input-group .form-control {
+    background-color: rgba(0, 0, 0, 0.1);
+    color: var(--white);
+    border: 1px solid var(--border-color);
+    border-left: none;
+    padding: 12px 15px;
+    transition: all 0.3s ease;
+}
+
+.luxury-input-group .form-control::placeholder {
+    color: var(--text-muted);
+}
+
+.luxury-input-group:focus-within .input-group-text,
+.luxury-input-group:focus-within .form-control {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 12px var(--primary-glow);
+}
+
+.luxury-input-group:focus-within .input-group-text {
+    color: var(--primary-color);
+}
+
+/* ==== Khu vực tải ảnh (Upload Zone) ==== */
+.upload-label-luxury {
+    border: 2px dashed var(--border-color);
+    border-radius: 12px;
+    display: block;
+    cursor: pointer;
+    transition: 0.3s;
+    background: rgba(0,0,0,0.1);
+}
+
+.upload-label-luxury:hover {
+    border-color: var(--primary-color);
+    background: rgba(139, 92, 246, 0.05); /* Hover nền tím nhạt */
+}
+
+.upload-icon {
+    color: var(--primary-color);
+}
+
+/* Chứa danh sách ảnh Preview */
+.thumbnail-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-content: flex-start;
+}
+
+.thumbnail-wrapper {
+    position: relative;
+    width: calc(33.333% - 8px); 
+    aspect-ratio: 1; /* Cắt ảnh thành hình vuông */
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+}
+
+.thumbnail-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Nút xoá ảnh Preview */
+.btn-delete-image {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: rgba(239, 68, 68, 0.9);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.3s;
+    z-index: 2;
+}
+
+.btn-delete-image:hover {
+    background: #ef4444;
+    transform: scale(1.1);
+}
+
+/* ==== Buttons Tác Vụ ==== */
+.btn-create-luxury,
+.btn-back-luxury {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 30px;
+    min-width: 180px; 
+    height: 48px;
+    background: transparent;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+/* 1. Nút Quay lại: Viền Đỏ */
+.btn-back-luxury {
+    color: var(--danger-color) !important;
+    border: 1px solid var(--danger-color) !important;
+}
+
+.btn-back-luxury:hover {
+    background: var(--danger-color) !important;
+    color: #fff !important;
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.5); /* Glow đỏ */
+    transform: translateY(-2px);
+}
+
+/* 2. Nút Khởi tạo: Viền Tím Y Khoa (Tạo điểm nhấn chính) */
+.btn-create-luxury {
+    color: var(--primary-color) !important;
+    border: 1px solid var(--primary-color) !important;
+}
+
+.btn-create-luxury:hover {
+    background: var(--primary-color) !important;
+    color: #fff !important; 
+    box-shadow: 0 0 15px var(--primary-glow); /* Glow Tím */
+    transform: translateY(-2px);
+}
+
+/* Custom lại khu vực chứa nút để không bị vạ lây từ _Layout.css */
+.form-actions {
+    border-top: 1px dashed var(--border-color); /* Kẻ viền nét đứt sang trọng */
+    background-color: transparent !important;   /* Ép nền trong suốt 100% */
+}

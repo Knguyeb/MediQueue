@@ -1,0 +1,348 @@
+:root {
+    /* Tông màu Tím Y Học (Medical Purple) & Công nghệ */
+    --primary-color: #8b5cf6; /* Tím hiện đại, sáng sủa */
+    --primary-dark: #7c3aed;  /* Tím đậm khi hover */
+    --primary-glow: rgba(139, 92, 246, 0.4);
+    
+    /* Nền xám đen sang trọng (Dark Theme) */
+    --dark-bg: #18181b;       /* Nền tổng thể xám đen */
+    --surface-bg: #27272a;    /* Nền thẻ nổi (Card, Footer) */
+    
+    /* Màu chữ và viền */
+    --white: #ffffff;
+    --text-main: #e4e4e7;     /* Chữ trắng xám chống mỏi mắt */
+    --text-muted: #a1a1aa;
+    --border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Nền toàn trang */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: var(--dark-bg) !important;
+    color: var(--text-main);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+}
+
+body.d-flex {
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: 100vh !important;
+}
+
+main {
+    flex-grow: 1 !important;
+}
+
+main.container {
+    padding-top: 1.5rem !important;
+    max-width: 98%;
+}
+
+/* --------------------------------------
+   NAVBAR (THANH ĐIỀU HƯỚNG TÍM Y HỌC)
+   -------------------------------------- */
+
+/* Container chứa cả Logo và Chữ */
+.navbar-brand {
+    padding: 0 10px !important;
+    height: 100%; /* Đảm bảo nó cao bằng Navbar */
+    display: flex;
+    align-items: center;
+}
+
+/* Wrapper riêng cho logo - giữ vị trí ổn định */
+.brand-logo-container {
+    height: 100%; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+    position: relative; /* Cho phép logo tràn ra nếu cần */
+}
+
+/* Kích thước Logo (Bạn có thể tăng height thoải mái ở đây) */
+.nav-logo {
+    height: 55px; /* Tăng kích thước N tại đây (ví dụ: 50px, 55px, 60px) */
+    width: auto;
+    object-fit: contain;
+    filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.3)); /* Thêm đổ bóng để logo trông nổi bật */
+    transition: transform 0.3s ease;
+}
+
+/* Tăng kích thước chữ để cân đối với logo mới */
+.brand-text {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: white;
+    margin-top: 2px; /* Căn chỉnh nhẹ cho thẳng hàng với logo */
+}
+
+.custom-navbar {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
+    box-shadow: 0 4px 15px var(--primary-glow);
+    padding: 0.8rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.navbar-brand {
+    color: var(--white) !important;
+    font-weight: 700 !important;
+    font-size: 1.5rem;
+    transition: all 0.3s ease;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    margin-right: 1rem;
+    letter-spacing: 1px;
+}
+
+.navbar-brand:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.nav-link {
+    color: rgba(255, 255, 255, 0.85) !important;
+    transition: all 0.3s ease;
+    padding: 0.6rem 1.2rem !important;
+    margin: 0 0.3rem;
+    border-radius: 6px;
+    font-weight: 500;
+    position: relative;
+    background-color: transparent;
+}
+
+.nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+    color: var(--white) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.nav-link:active {
+    transform: translateY(0);
+}
+
+.navbar-nav .nav-item:last-child {
+    margin-left: 1rem;
+    padding-left: 1rem;
+    border-left: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.navbar-nav .nav-item:last-child .nav-link {
+    background-color: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    font-weight: 600;
+}
+
+.navbar-nav .nav-item:last-child .nav-link:hover {
+    background-color: var(--white);
+    color: var(--primary-dark) !important;
+}
+
+/* --------------------------------------
+   FOOTER (CHÂN TRANG XÁM ĐEN)
+   -------------------------------------- */
+.footer {
+    border-top: 2px solid var(--primary-color) !important;
+    background-color: var(--surface-bg) !important;
+    color: var(--text-muted) !important;
+    padding: 3rem 0 1rem 0;
+    margin-top: auto;
+}
+
+.footer-columns {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.footer-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.footer-tagline {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--primary-color);
+    margin: 0;
+    font-style: italic;
+}
+
+.footer-contact p {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    color: var(--text-main);
+}
+
+.footer-contact i {
+    color: var(--primary-color);
+    width: 16px;
+}
+
+.footer-social {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.footer-social a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    color: var(--text-main) !important;
+    text-decoration: none;
+    font-size: 1rem;
+}
+
+.footer-social a:hover {
+    background: var(--primary-color);
+    color: var(--white) !important;
+    border-color: var(--primary-color);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px var(--primary-glow);
+}
+
+.footer-column h5 {
+    color: var(--white);
+    font-weight: 600;
+    margin-bottom: 1.2rem;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.footer-divider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
+    margin: 1.5rem 0;
+    opacity: 0.5;
+}
+
+.footer-bottom {
+    text-align: center;
+    padding-top: 1rem;
+}
+
+.footer-copyright {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+/* --------------------------------------
+   FLOAT BUTTON & CHATBOT
+   -------------------------------------- */
+.chatbot-fab {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    background-color: var(--primary-color);
+    color: var(--white);
+    border: none;
+    border-radius: 50%;
+    box-shadow: 0 4px 15px var(--primary-glow);
+    font-size: 24px;
+    cursor: pointer;
+    z-index: 1040;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.chatbot-fab:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.6);
+    background-color: var(--primary-dark);
+}
+
+/* Kiểu dáng tin nhắn Chatbot (Dark Mode) */
+.chat-message {
+    max-width: 85%;
+    padding: 10px 15px;
+    border-radius: 15px;
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.ai-message {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--text-main);
+    align-self: flex-start;
+    border-bottom-left-radius: 2px;
+    border: 1px solid var(--border-color);
+}
+
+.user-message {
+    background-color: var(--primary-color);
+    color: var(--white);
+    align-self: flex-end;
+    border-bottom-right-radius: 2px;
+    margin-left: auto;
+}
+
+/* Modal / Offcanvas Dark Theme Override */
+.offcanvas {
+    background-color: var(--surface-bg) !important;
+    color: var(--text-main) !important;
+    border-left: 1px solid var(--primary-color) !important;
+}
+
+.offcanvas-header {
+    border-bottom: 1px solid var(--border-color) !important;
+}
+
+.offcanvas-title {
+    color: var(--primary-color) !important;
+}
+
+.offcanvas-footer, .border-top {
+    border-top: 1px solid var(--border-color) !important;
+    background-color: rgba(0,0,0,0.2) !important;
+}
+
+.form-control {
+    background-color: rgba(255,255,255,0.05) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-main) !important;
+}
+
+.form-control:focus {
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 0 0 0.25rem var(--primary-glow) !important;
+}
+
+.btn-primary {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-dark) !important;
+}
+
+.btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}

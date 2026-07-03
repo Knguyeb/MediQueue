@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{_Layout}">
+<head>
+    <title>Trang Chủ - MediQueue</title>
+    <link rel="stylesheet" th:href="@{/css/Home.css}" />
+</head>
+<body>
+
+    <div layout:fragment="content">
+        
+        <div class="hero-banner">
+            <div class="hero-content text-center">
+                <h1 class="hero-title">MediQueue</h1>
+                <p class="hero-subtitle">Tìm kiếm cơ sở y tế hoàn hảo cho sức khỏe của bạn</p>
+
+                <form th:action="@{/home}" method="get" class="search-form mx-auto">
+                    <div class="search-input-wrapper">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" id="liveSearchInput"
+                               name="search"
+                               th:value="${searchKeyword}"
+                               class="txtSearch form-control shadow-lg"
+                               placeholder="Tìm kiếm bệnh viện, phòng khám..."
+                               autocomplete="off" />
+
+                        <div id="searchDropdown" class="search-dropdown d-none">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mt-4">
+            
+            <div class="col" th:each="bv : ${danhSachBenhVien}">
+                <div class="card h-100 hospital-card">
+
+                    <div class="card-img-wrapper">
+                        <img th:if="${bv.hinhAnh != null and !bv.hinhAnh.isEmpty()}" 
+                             th:src="@{'/images/' + ${#strings.arraySplit(bv.hinhAnh, ';')[0]}}" 
+                             class="card-img-top w-100 h-100" 
+                             style="object-fit: cover;"
+                             th:onerror="this.src='/images/no-image.png'"
+                             th:alt="${bv.tenBenhVien}" />
+                             
+                        <img th:unless="${bv.hinhAnh != null and !bv.hinhAnh.isEmpty()}" 
+                             th:src="@{/images/no-image.png}" 
+                             class="card-img-top w-100 h-100" 
+                             style="object-fit: cover;"
+                             alt="No Image" />
+
+                        <div class="rating-badge">
+                            <span><i class="fas fa-star me-1"></i> 5.0</span>
+                        </div>
+                    </div>
+
+                    <div class="card-body d-flex flex-column text-center">
+                        <h5 class="hospital-title fw-bold" th:text="${bv.tenBenhVien}">Tên Bệnh Viện</h5>
+                        <p class="card-text hospital-address mb-4">
+                            <i class="fas fa-map-marker-alt text-danger me-1"></i> 
+                            <span th:text="${bv.diaChi}">Địa chỉ</span>
+                        </p>
+                        
+                        <a th:href="@{/benhvien/chitiet/{id}(id=${bv.maBenhVien})}" class="btn btnChiTiet mt-auto">
+                            Xem chi tiết <i class="fas fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="col-12" th:if="${#lists.isEmpty(danhSachBenhVien)}">
+                <div class="alert alert-secondary text-center" style="background-color: #27272a; border:none; color: #a1a1aa;">
+                    Chưa có dữ liệu bệnh viện trong hệ thống.
+                </div>
+            </div>
+
+        </div>
+
+        <nav aria-label="Page navigation" class="mt-4" th:if="${totalPages != null and totalPages > 1}">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPages)}" th:classappend="${i == currentPage ? 'active' : ''}">
+                    <a class="page-link" th:href="@{/home(page=${i}, search=${searchKeyword})}" th:text="${i}">1</a>
+                </li>
+            </ul>
+        </nav>
+
+    </div>
+
+    <th:block layout:fragment="scripts">
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script th:src="@{/js/Share/Delete.js}"></script>
+        <script th:src="@{/js/Share/Success.js}"></script>
+        <script th:src="@{/js/Share/ScrollTop.js}"></script>
+
+        <script th:inline="javascript">
+            $(document).ready(function () {
+                let delayTimer;
+                const $searchInput = $('#liveSearchInput');
+                const $dropdown = $('#searchDropdown');
+
+                const searchApiUrl = /*[[@{/api/benhvien/search}]]*/ '/api/benhvien/search';
+
+                // 1. Live search khi gõ phím
+                $searchInput.on('input', function () {
+                    clearTimeout(delayTimer);
+                    let searchText = $(this).val().trim();
+
+                    if (searchText === "") {
+                        $dropdown.addClass('d-none').html('');
+                        return;
+                    }
+
+                    delayTimer = setTimeout(function() {
+                        $.ajax({
+                            url: searchApiUrl,
+                            type: 'GET',
+                            data: { keyword: searchText },
+                            success: function (data) {
+                                if(data && data.length > 0) {
+                                    let html = '';
+                                    data.forEach(item => {
+                                        let firstImg = item.hinhAnh ? item.hinhAnh.split(';')[0] : 'no-image.png';
+                                        
+                                        html += `
+                                            <a href="/benhvien/chitiet/${item.maBenhVien}" class="search-dropdown-item">
+                                                <img src="/images/${firstImg}" alt="${item.tenBenhVien}" class="me-3 rounded" style="width: 50px; height: 50px; object-fit: cover;" onerror="this.src='/images/no-image.png'" />
+                                                <div>
+                                                    <div class="fw-bold mb-1">${item.tenBenhVien}</div>
+                                                    <small style="color: #a1a1aa;"><i class="fas fa-map-marker-alt text-danger me-1"></i> ${item.diaChi}</small>
+                                                </div>
+                                            </a>
+                                        `;
+                                    });
+                                    $dropdown.html(html).removeClass('d-none');
+                                } else {
+                                    $dropdown.html('<div class="p-3 text-center text-muted">Không tìm thấy bệnh viện nào.</div>').removeClass('d-none');
+                                }
+                            },
+                            error: function() {
+                                console.log("API tìm kiếm chưa sẵn sàng.");
+                            }
+                        });
+                    }, 300);
+                });
+
+                // 2. Ẩn dropdown
+                $(document).on('click', function (e) {
+                    if (!$(e.target).closest('.search-input-wrapper').length) {
+                        $dropdown.addClass('d-none');
+                    }
+                });
+
+                // 3. Hiện lại dropdown
+                $searchInput.on('focus', function () {
+                    if ($(this).val().trim() !== "" && $dropdown.html().trim() !== "") {
+                        $dropdown.removeClass('d-none');
+                    }
+                });
+            });
+        </script>
+    </th:block>
+</body>
+</html>
