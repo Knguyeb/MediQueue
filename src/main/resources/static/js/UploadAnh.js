@@ -83,3 +83,27 @@ function removeFile(fileToRemove) {
     // Gán lại cho thẻ input
     document.getElementById('fileInput').files = dt.files;
 }
+
+// HÀM XỬ LÝ KHI BẤM XÓA ẢNH CŨ TỪ DATABASE
+function removeOldImage(buttonElement) {
+    // Lấy URL từ thuộc tính data-url
+    const imageUrl = buttonElement.getAttribute('data-url');
+    
+    // 1. Xóa giao diện
+    // Lưu ý: ID của wrapper phải khớp với logic bạn tạo bên HTML
+    const imageWrapper = buttonElement.closest('.thumbnail-wrapper');
+    if (imageWrapper) {
+        imageWrapper.remove();
+    }
+
+    // 2. Cập nhật vào input ẩn
+    const deletedInput = document.getElementById('deletedImageIds');
+    let currentDeleted = deletedInput.value ? deletedInput.value.split(',') : [];
+    
+    if (!currentDeleted.includes(imageUrl)) {
+        currentDeleted.push(imageUrl);
+    }
+    deletedInput.value = currentDeleted.join(',');
+    
+    console.log("Danh sách ảnh cần xóa: " + deletedInput.value);
+}
