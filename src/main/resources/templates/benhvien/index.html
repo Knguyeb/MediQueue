@@ -143,14 +143,16 @@
         </div>
     </div>
 
-  <th:block layout:fragment="scripts">
+    <th:block layout:fragment="scripts">
         <input type="hidden" id="successMessage" th:value="${successMessage}" />
         <input type="hidden" id="errorMessage" th:value="${errorMessage}" />
 
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
         <script th:src="@{/js/Delete.js}"></script>
         <script th:src="@{/js/Success.js}"></script>
-        <script th:src="@{/js/PhanTrang.js}"></script>
-        <script th:src="@{/js/Search.js}"></script>
+        <script th:src="@{/js/Error.js}"></script>
+        <script th:src="@{/js/PhanTrang.js}"></script> 
 
         <script>
             var pageConfig;
@@ -161,7 +163,7 @@
                     paginationId: 'pagination',
                     visibleCountId: 'visibleCount',
                     noResultsId: 'noResults',
-                    rowsPerPage: 10
+                    rowsPerPage: 10 // Đang cấu hình 10 dòng/trang
                 });
             });
         </script>

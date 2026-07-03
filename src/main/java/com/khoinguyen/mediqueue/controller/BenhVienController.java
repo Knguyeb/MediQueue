@@ -9,11 +9,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes; // Import để truyền dữ liệu thông báo khi redirect
 
 import java.util.List;
 import java.util.Optional;
 
-@Controller // Đổi thành @Controller để có thể trả về file HTML
+@Controller 
 @CrossOrigin
 public class BenhVienController {
 
@@ -48,9 +50,46 @@ public class BenhVienController {
         return "benhvien/create"; 
     }
 
+    @PostMapping("/benhvien/create")
+    public String saveBenhVien(@ModelAttribute BenhVien benhVien, 
+                               @RequestParam(value = "HinhAnhFiles", required = false) List<MultipartFile> hinhAnhFiles,
+                               RedirectAttributes redirectAttributes) {
+        try {
+            // (Tùy chọn) Xử lý logic lưu file hình ảnh thực tế tại đây nếu cần
+            
+            // Lưu thông tin bệnh viện vào cơ sở dữ liệu
+            benhVienService.save(benhVien);
+            
+            // Gửi thông báo thành công đến file Success.js
+            redirectAttributes.addFlashAttribute("successMessage", "Thêm mới bệnh viện thành công!");
+        } catch (Exception e) {
+            // Gửi thông báo lỗi đến file Error.js nếu có ngoại lệ xảy ra
+            redirectAttributes.addFlashAttribute("errorMessage", "Đã xảy ra lỗi khi khởi tạo dữ liệu: " + e.getMessage());
+        }
+        
+        // Chuyển hướng về trang danh sách
+        return "redirect:/benhvien/index"; 
+    }
+
+    // Đổi thành @PostMapping để khớp với method="post" của thẻ form ẩn
+    @PostMapping("/benhvien/delete/{id}")
+    public String deleteBenhVienUI(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
+        try {
+            if (benhVienService.existsById(id)) {
+                benhVienService.deleteById(id);
+                redirectAttributes.addFlashAttribute("successMessage", "Đã xóa bệnh viện khỏi hệ thống vĩnh viễn!");
+            } else {
+                redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy bệnh viện này trên hệ thống.");
+            }
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Không thể xóa bệnh viện này vì dữ liệu đang được sử dụng ở chức năng khác!");
+        }
+        
+        return "redirect:/benhvien/index";
+    }
+
     // =================================================================
     // 2. KHU VỰC API - Trả về dữ liệu JSON cho Frontend (AJAX/Fetch)
-    // Bắt buộc phải có @ResponseBody để Spring Boot không đi tìm file HTML
     // =================================================================
 
     @GetMapping("/api/benhvien")
@@ -69,7 +108,7 @@ public class BenhVienController {
 
     @PostMapping("/api/benhvien")
     @ResponseBody
-    public ResponseEntity<BenhVien> create(@RequestBody BenhVien benhVien) {
+    public ResponseEntity<BenhVien> createApi(@RequestBody BenhVien benhVien) { 
         BenhVien saved = benhVienService.save(benhVien);
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
