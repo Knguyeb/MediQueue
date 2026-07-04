@@ -2,7 +2,7 @@
 <html lang="vi"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{_Layout}">
+      layout:decorate="~{_layout}">
 <head>
     <title>Trang Chủ - MediQueue</title>
     <link rel="stylesheet" th:href="@{/css/Home.css}" />
@@ -39,15 +39,15 @@
                 <div class="card h-100 hospital-card">
 
                     <div class="card-img-wrapper">
-                        <img th:if="${bv.hinhAnh != null and !bv.hinhAnh.isEmpty()}" 
-                             th:src="@{'/images/' + ${#strings.arraySplit(bv.hinhAnh, ';')[0]}}" 
-                             class="card-img-top w-100 h-100" 
-                             style="object-fit: cover;"
-                             th:onerror="this.src='/images/no-image.png'"
-                             th:alt="${bv.tenBenhVien}" />
+                       <img th:if="${bv.hinhAnh != null and !bv.hinhAnh.isEmpty()}" 
+                            th:src="@{'/images/' + ${#strings.arraySplit(bv.hinhAnh, ';')[0]}}" 
+                            class="card-img-top w-100 h-100" 
+                            style="object-fit: cover;"
+                            onerror="this.onerror=null; this.src='/images/Logo.png'"
+                            th:alt="${bv.tenBenhVien}" />
                              
                         <img th:unless="${bv.hinhAnh != null and !bv.hinhAnh.isEmpty()}" 
-                             th:src="@{/images/no-image.png}" 
+                             th:src="@{/images/Logo.png}" 
                              class="card-img-top w-100 h-100" 
                              style="object-fit: cover;"
                              alt="No Image" />
@@ -92,6 +92,7 @@
 
     <th:block layout:fragment="scripts">
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        
         <script th:src="@{/js/Share/Delete.js}"></script>
         <script th:src="@{/js/Share/Success.js}"></script>
         <script th:src="@{/js/Share/ScrollTop.js}"></script>
@@ -104,7 +105,6 @@
 
                 const searchApiUrl = /*[[@{/api/benhvien/search}]]*/ '/api/benhvien/search';
 
-                // 1. Live search khi gõ phím
                 $searchInput.on('input', function () {
                     clearTimeout(delayTimer);
                     let searchText = $(this).val().trim();
@@ -123,11 +123,11 @@
                                 if(data && data.length > 0) {
                                     let html = '';
                                     data.forEach(item => {
-                                        let firstImg = item.hinhAnh ? item.hinhAnh.split(';')[0] : 'no-image.png';
+                                        let firstImg = item.hinhAnh ? item.hinhAnh.split(';')[0] : 'Logo.png';
                                         
                                         html += `
                                             <a href="/benhvien/chitiet/${item.maBenhVien}" class="search-dropdown-item">
-                                                <img src="/images/${firstImg}" alt="${item.tenBenhVien}" class="me-3 rounded" style="width: 50px; height: 50px; object-fit: cover;" onerror="this.src='/images/no-image.png'" />
+                                                <img src="/images/${firstImg}" alt="${item.tenBenhVien}" class="me-3 rounded" style="width: 50px; height: 50px; object-fit: cover;" onerror="this.onerror=null; this.src='/images/Logo.png'" />
                                                 <div>
                                                     <div class="fw-bold mb-1">${item.tenBenhVien}</div>
                                                     <small style="color: #a1a1aa;"><i class="fas fa-map-marker-alt text-danger me-1"></i> ${item.diaChi}</small>
@@ -137,24 +137,22 @@
                                     });
                                     $dropdown.html(html).removeClass('d-none');
                                 } else {
-                                    $dropdown.html('<div class="p-3 text-center text-muted">Không tìm thấy bệnh viện nào.</div>').removeClass('d-none');
+                                    $dropdown.html('<div class="p-3 text-center text-muted">Không tìm thấy cơ sở y tế nào.</div>').removeClass('d-none');
                                 }
                             },
                             error: function() {
-                                console.log("API tìm kiếm chưa sẵn sàng.");
+                                console.log("API tìm kiếm chưa sẵn sàng hoặc có lỗi.");
                             }
                         });
                     }, 300);
                 });
 
-                // 2. Ẩn dropdown
                 $(document).on('click', function (e) {
                     if (!$(e.target).closest('.search-input-wrapper').length) {
                         $dropdown.addClass('d-none');
                     }
                 });
 
-                // 3. Hiện lại dropdown
                 $searchInput.on('focus', function () {
                     if ($(this).val().trim() !== "" && $dropdown.html().trim() !== "") {
                         $dropdown.removeClass('d-none');

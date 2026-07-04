@@ -2,172 +2,163 @@
 <html lang="vi"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{_Layout}">
+      layout:decorate="~{_layout}">
 <head>
-    <title>Quản lý Bệnh viện</title>
+    <title>Quản lý Bệnh Viện - MediQueue</title>
+    <link rel="stylesheet" th:href="@{/css/Index.css}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 </head>
 <body>
 
-    <div layout:fragment="content">
-        
-        <link rel="stylesheet" th:href="@{/css/Index.css}" />
+<div layout:fragment="content" class="container-fluid fade-in-up mt-4">
 
-        <div class="container-fluid fade-in-up mt-2">
-            
-            <div class="row mb-4 g-3 align-items-stretch">
-                <div class="col-md-4">
-                    <div class="stat-card h-100 d-flex align-items-center">
-                        <div class="stat-icon">
-                            <i class="bi bi-hospital"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h6>Tổng Số Cơ Sở Y Tế</h6>
-                            <h3 id="totalCount" th:text="${#lists.size(danhSachCoSo)}">0</h3>
-                        </div>
-                    </div>
+    <div class="row mb-4 g-3 align-items-stretch">
+        <div class="col-md-4">
+            <div class="stat-card h-100 d-flex align-items-center">
+                <div class="stat-icon">
+                    <i class="bi bi-hospital"></i>
                 </div>
-
-                <div class="col-md-8">
-                    <div class="stat-card h-100 d-flex align-items-center justify-content-between">
-                        <div>
-                            <h2 class="page-title mb-1">DANH MỤC BỆNH VIỆN</h2>
-                            <p class="text-secondary mb-0 small" style="color: var(--text-muted) !important;">Quản lý đối tác và cơ sở y tế trên hệ thống</p>
-                        </div>
-                        <div class="d-flex gap-2">
-                            <a th:href="@{/benhvien/create}" class="btn btn-primary-medical text-decoration-none">
-                                <i class="bi bi-plus-lg me-1"></i> Thêm mới
-                            </a>
-                            <a th:href="@{/benhvien/export}" class="btn btn-excel-medical text-decoration-none">
-                                <i class="bi bi-file-earmark-excel me-1"></i> Xuất Excel
-                            </a>
-                        </div>
-                    </div>
+                <div class="stat-info">
+                    <h6>Tổng Cơ Sở Y Tế</h6>
+                    <h3 id="totalCount" th:text="${#lists.size(danhSachCoSo)}">0</h3>
                 </div>
             </div>
+        </div>
 
-            <div class="glass-container">
-                <div class="toolbar-wrapper mb-3">
-                    <div class="search-box-medical">
-                        <i class="bi bi-search"></i>
-                        <input type="text" id="searchHotel" placeholder="Tìm kiếm tên, địa chỉ, SĐT..." autocomplete="off">
-                    </div>
+        <div class="col-md-8">
+            <div class="stat-card h-100 d-flex align-items-center justify-content-between">
+                <div>
+                    <h2 class="page-title mb-1">DANH MỤC BỆNH VIỆN</h2>
+                    <p class="text-secondary mb-0 small">Quản lý đối tác và cơ sở y tế trên hệ thống</p>
                 </div>
-
-                <div class="table-responsive">
-                    <table class="table custom-table align-middle" id="hotelTable">
-                        <thead>
-                            <tr>
-                                <th class="text-center" style="width: 5%">#</th>
-                                <th class="text-start">Thông tin cơ sở y tế</th>
-                                <th class="text-center">Số điện thoại</th>
-                                <th class="text-center">Tác vụ quản lý</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="item, iterStat : ${danhSachCoSo}">
-                                <td class="text-center text-muted fw-bold" th:text="${iterStat.count}">1</td>
-                                
-                                <td class="text-start">
-                                    <div class="d-flex align-items-center mb-1">
-                                        <i class="bi bi-hospital me-2" style="color: var(--primary-color); font-size: 1.1rem;"></i>
-                                        <span class="clinic-name-text" th:text="${item.TenBenhVien}">Tên bệnh viện</span>
-                                    </div>
-                                    <div>
-                                        <i class="bi bi-geo-alt me-1" style="color: var(--text-muted);"></i>
-                                        <span class="address-text" th:text="${item.DiaChi}">Địa chỉ</span>
-                                    </div>
-                                </td>
-                                
-                                <td class="text-center fw-semibold" style="color: var(--text-main);">
-                                    <i class="bi bi-telephone me-1" style="color: var(--cyan-accent);"></i> 
-                                    <span th:text="${item.SoDienThoai}">0123456789</span>
-                                </td>
-                                
-                                <td>
-                                    <div class="d-flex justify-content-center gap-2">
-    
-                                        <a th:href="@{/benhvien/edit/{id}(id=${item.MaBenhVien})}" class="btn btn-icon-medical btn-warning-glow" title="Sửa thông tin">
-                                            <i class="bi bi-pencil-square"></i>
-                                        </a>
-
-                                        <a th:href="@{/benhvien/details/{id}(id=${item.MaBenhVien})}" class="btn btn-icon-medical btn-info-glow" title="Chi tiết">
-                                            <i class="bi bi-info-circle"></i>
-                                        </a>
-
-                                        <button type="button" class="btn btn-icon-medical btn-danger-glow" th:onclick="'confirmDelete(' + ${item.MaBenhVien} + ')'" title="Xóa">
-                                            <i class="bi bi-trash-fill"></i>
-                                        </button>
-
-                                        <div style="width: 1px; background: var(--border-color); margin: 0 4px;"></div>
-
-                                        <a th:href="@{/phongkham/index(maBenhVien=${item.MaBenhVien})}" class="btn btn-icon-medical btn-emerald-glow" title="Quản lý Phòng Khám">
-                                            <i class="bi bi-door-open"></i>
-                                        </a>
-
-                                        <a th:href="@{/bacsi/index(maBenhVien=${item.MaBenhVien})}" class="btn btn-icon-medical btn-purple-glow" title="Quản lý Bác sĩ">
-                                            <i class="bi bi-person-heart"></i>
-                                        </a>
-
-                                        <a th:href="@{/phieukham/index(maBenhVien=${item.MaBenhVien})}" class="btn btn-icon-medical btn-cyan-glow" title="Phiếu Khám">
-                                            <i class="bi bi-receipt-cutoff"></i>
-                                        </a>
-                                    </div>
-
-                                    <form th:id="'deleteForm-' + ${item.MaBenhVien}" method="post" th:action="@{/benhvien/delete/{id}(id=${item.MaBenhVien})}" style="display:none;">
-                                    </form>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-
-                    <div id="noResults" class="text-center py-5" style="display: none;">
-                        <div class="mb-3">
-                            <i class="bi bi-search no-result-icon"></i>
-                        </div>
-                        <h5 style="color: var(--white);">Không tìm thấy cơ sở y tế nào</h5>
-                        <p style="color: var(--text-muted);">Vui lòng thử lại với từ khóa khác.</p>
-                        <button type="button" onclick="pageConfig.clearSearch()" class="btn btn-primary-medical mt-2 rounded-pill px-4">
-                            <i class="bi bi-arrow-clockwise me-1"></i> Hiển thị tất cả
-                        </button>
-                    </div>
-                </div>
-
-                <div class="table-footer d-flex justify-content-between align-items-center mt-auto pt-3" style="border-top: 1px solid var(--border-color)">
-                    <span style="color: var(--text-muted); font-size: 0.875rem;">
-                        Đang hiển thị <strong id="visibleCount" style="color: var(--white);" th:text="${#lists.size(danhSachCoSo)}">0</strong> cơ sở
-                    </span>
-                    
-                    <ul id="pagination" class="pagination-medical"></ul>
+                <div class="d-flex gap-2">
+                    <a th:href="@{/benhvien/create}" class="btn btn-primary-medical text-decoration-none">
+                        <i class="bi bi-plus-lg me-1"></i> Thêm mới
+                    </a>
+                    <a th:href="@{/benhvien/export}" class="btn btn-excel-medical text-decoration-none">
+                        <i class="bi bi-file-earmark-excel me-1"></i> Xuất Excel
+                    </a>
                 </div>
             </div>
         </div>
     </div>
 
-    <th:block layout:fragment="scripts">
-        <input type="hidden" id="successMessage" th:value="${successMessage}" />
-        <input type="hidden" id="errorMessage" th:value="${errorMessage}" />
+    <div class="glass-container">
+        <div class="toolbar-wrapper mb-3">
+            <div class="search-box-medical">
+                <i class="bi bi-search"></i>
+                <input type="text" id="searchHotel" placeholder="Tìm kiếm tên, địa chỉ, SĐT..." autocomplete="off">
+            </div>
+        </div>
 
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <div class="table-responsive">
+            <table class="table custom-table align-middle" id="hotelTable">
+                <thead>
+                    <tr>
+                        <th class="text-center" style="width: 5%">#</th>
+                        <th class="text-start">Thông tin cơ sở y tế</th>
+                        <th class="text-center">Số điện thoại</th>
+                        <th class="text-center">Tác vụ quản lý</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="item, iterStat : ${danhSachCoSo}">
+                        <td class="text-center text-muted fw-bold" th:text="${iterStat.count}">1</td>
+                        
+                        <td class="text-start">
+                            <div class="clinic-name-text">
+                                <i class="bi bi-hospital me-2"></i>
+                                <span th:text="${item.tenBenhVien}">Tên Bệnh Viện</span>
+                            </div>
+                            <div class="address-text mt-1">
+                                <i class="bi bi-geo-alt me-1"></i>
+                                <span th:text="${item.diaChi}">Địa chỉ</span>
+                            </div>
+                        </td>
+                        
+                        <td class="text-center fw-semibold">
+                            <i class="bi bi-telephone text-success me-1"></i> 
+                            <span th:text="${item.soDienThoai}">Số điện thoại</span>
+                        </td>
+                        
+                        <td>
+                            <div class="d-flex justify-content-center gap-2">
+                                
+                                <a th:href="@{/benhvien/edit/{id}(id=${item.maBenhVien})}" class="btn-icon-medical btn-warning-glow" title="Sửa thông tin">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
 
-        <script th:src="@{/js/Delete.js}"></script>
-        <script th:src="@{/js/Success.js}"></script>
-        <script th:src="@{/js/Error.js}"></script>
-        <script th:src="@{/js/PhanTrang.js}"></script> 
+                                <a th:href="@{/benhvien/details/{id}(id=${item.maBenhVien})}" class="btn-icon-medical btn-info-glow" title="Chi tiết">
+                                    <i class="bi bi-info-circle"></i>
+                                </a>
 
-        <script>
-            var pageConfig;
-            document.addEventListener("DOMContentLoaded", function () {
-                pageConfig = new TablePaginator({
-                    tableId: 'hotelTable',
-                    searchInputId: 'searchHotel',
-                    paginationId: 'pagination',
-                    visibleCountId: 'visibleCount',
-                    noResultsId: 'noResults',
-                    rowsPerPage: 10 // Đang cấu hình 10 dòng/trang
-                });
+                                <button class="btn-icon-medical btn-danger-glow" th:onclick="'confirmDelete(' + ${item.maBenhVien} + ')'" title="Xóa">
+                                    <i class="bi bi-trash-fill"></i>
+                                </button>
+
+                                <div style="width: 1px; background: rgba(255,255,255,0.1); margin: 0 4px;"></div>
+
+                                <a th:href="@{/bacsi/index(maBenhVien=${item.maBenhVien})}" class="btn-icon-medical btn-purple-glow" title="Quản lý Bác sĩ">
+                                    <i class="bi bi-person-heart"></i>
+                                </a>
+
+                                <a th:href="@{/taikhoan/index(maBenhVien=${item.maBenhVien})}" class="btn-icon-medical btn-cyan-glow" title="Quản lý Tài khoản">
+                                    <i class="bi bi-person-badge"></i>
+                                </a>
+
+                            </div>
+
+                            <form th:id="'deleteForm-' + ${item.maBenhVien}" method="post" th:action="@{/benhvien/delete/{id}(id=${item.maBenhVien})}" style="display:none;">
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div id="noResults" class="text-center py-5" style="display: none;">
+                <div class="mb-3">
+                    <i class="bi bi-search no-result-icon"></i>
+                </div>
+                <h5 class="text-light">Không tìm thấy cơ sở y tế nào</h5>
+                <p class="text-secondary">Vui lòng thử lại với từ khóa khác.</p>
+                <button type="button" onclick="pageConfig.clearSearch()" class="btn btn-outline-info mt-2 rounded-pill px-4">
+                    <i class="bi bi-arrow-clockwise me-1"></i> Hiển thị tất cả
+                </button>
+            </div>
+        </div>
+
+        <div class="table-footer d-flex justify-content-between align-items-center mt-auto pt-3" style="border-top: 1px solid var(--border-color)">
+            <span class="text-secondary small">Đang hiển thị <strong id="visibleCount" class="text-light">0</strong> cơ sở y tế</span>
+            <ul id="pagination" class="pagination-medical">
+                </ul>
+        </div>
+    </div>
+</div>
+
+<th:block layout:fragment="scripts">
+    <input type="hidden" id="successMessage" th:value="${successMessage}" />
+    <input type="hidden" id="errorMessage" th:value="${errorMessage}" />
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script th:src="@{/js/Delete.js}"></script>
+    <script th:src="@{/js/Success.js}"></script>
+    <script th:src="@{/js/PhanTrang.js}"></script>
+
+    <script>
+        var pageConfig;
+        document.addEventListener("DOMContentLoaded", function () {
+            pageConfig = new TablePaginator({
+                tableId: 'hotelTable',
+                searchInputId: 'searchHotel',
+                paginationId: 'pagination',
+                visibleCountId: 'visibleCount',
+                noResultsId: 'noResults',
+                rowsPerPage: 10
             });
-        </script>
-    </th:block>
+        });
+    </script>
+</th:block>
 
 </body>
 </html>
