@@ -314,3 +314,28 @@
     color: var(--primary-color); 
     opacity: 0.5;
 }
+
+/* ================= SWEETALERT2 DARK THEME ================= */
+.swal-dark-popup {
+    background-color: var(--surface-bg, #1e1e2d) !important; 
+    border: 1px solid var(--border-color, #333) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5) !important;
+}
+.swal-dark-title {
+    color: var(--white, #fff) !important;
+}
+.swal-dark-label {
+    color: var(--text-muted, #aaa) !important;
+}
+.swal-dark-input {
+    background-color: rgba(0, 0, 0, 0.3) !important;
+    border: 1px solid var(--border-color, #444) !important;
+    color: var(--text-main, #fff) !important;
+    border-radius: 10px !important;
+}
+.swal-dark-input:focus {
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 0 0 3px var(--primary-glow) !important;
+    outline: none !important;
+}

@@ -1,7 +1,6 @@
 class TableSearcher {
     constructor(options) {
         this.searchInput = document.getElementById(options.searchInputId);
-        // Nhận vào một đối tượng TablePaginator để giao tiếp
         this.paginator = options.paginator; 
 
         if (!this.searchInput || !this.paginator) return;
@@ -25,7 +24,8 @@ class TableSearcher {
             
             // Tiến hành lọc
             const filteredRows = allRows.filter(row => {
-                const rowText = this.removeVietnameseTones(row.innerText.toLowerCase());
+                // ĐÃ SỬA: Đổi innerText thành textContent để đọc được cả những dòng đang bị ẩn do phân trang
+                const rowText = this.removeVietnameseTones(row.textContent.toLowerCase());
                 return rowText.includes(keyword);
             });
             

@@ -48,12 +48,12 @@
         <div class="toolbar-wrapper mb-3">
             <div class="search-box-medical">
                 <i class="bi bi-search"></i>
-                <input type="text" id="searchHotel" placeholder="Tìm kiếm tên, địa chỉ, SĐT..." autocomplete="off">
+                <input type="text" id="searchHospital" placeholder="Tìm kiếm tên, địa chỉ, SĐT..." autocomplete="off">
             </div>
         </div>
 
         <div class="table-responsive">
-            <table class="table custom-table align-middle" id="hotelTable">
+            <table class="table custom-table align-middle" id="hospitalTable">
                 <thead>
                     <tr>
                         <th class="text-center" style="width: 5%">#</th>
@@ -144,17 +144,26 @@
     <script th:src="@{/js/Delete.js}"></script>
     <script th:src="@{/js/Success.js}"></script>
     <script th:src="@{/js/PhanTrang.js}"></script>
+    <script th:src="@{/js/Search.js}"></script>
 
     <script>
         var pageConfig;
+        var searchConfig; // Thêm biến toàn cục cho phần tìm kiếm
+
         document.addEventListener("DOMContentLoaded", function () {
+            // 1. Khởi tạo Phân trang trước
             pageConfig = new TablePaginator({
-                tableId: 'hotelTable',
-                searchInputId: 'searchHotel',
+                tableId: 'hospitalTable',
                 paginationId: 'pagination',
                 visibleCountId: 'visibleCount',
                 noResultsId: 'noResults',
                 rowsPerPage: 10
+            });
+
+            // 2. Khởi tạo Tìm kiếm và truyền phân trang (paginator) vào để 2 class giao tiếp với nhau
+            searchConfig = new TableSearcher({
+                searchInputId: 'searchHospital',
+                paginator: pageConfig
             });
         });
     </script>

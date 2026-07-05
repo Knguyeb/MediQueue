@@ -46,6 +46,10 @@
                             <a class="nav-link" th:href="@{/benhvien/index}">Bệnh viện</a>
                         </li>
 
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/danhmucchuyenkhoa/index}">Danh mục chuyên khoa</a>
+                        </li>
+
                         <li class="nav-item" th:if="${session.QuyenHan == 'Khách hàng'}">
                             <a class="nav-link" th:href="@{/lichkham}">Lịch khám của tôi</a>
                         </li>

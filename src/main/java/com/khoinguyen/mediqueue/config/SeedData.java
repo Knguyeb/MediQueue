@@ -2,6 +2,10 @@ package com.khoinguyen.mediqueue.config;
 
 import com.khoinguyen.mediqueue.entity.BenhVien;
 import com.khoinguyen.mediqueue.repository.BenhVienRepository;
+
+import com.khoinguyen.mediqueue.entity.DanhMucChuyenKhoa;
+import com.khoinguyen.mediqueue.repository.DanhMucChuyenKhoaRepository;
+
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -12,10 +16,12 @@ import java.util.List;
 public class SeedData implements CommandLineRunner {
 
     private final BenhVienRepository benhVienRepository;
+    private final DanhMucChuyenKhoaRepository danhMucChuyenKhoaRepository;
 
     // Inject Repository vào để thao tác với Database
-    public SeedData(BenhVienRepository benhVienRepository) {
+    public SeedData(BenhVienRepository benhVienRepository, DanhMucChuyenKhoaRepository danhMucChuyenKhoaRepository) {
         this.benhVienRepository = benhVienRepository;
+        this.danhMucChuyenKhoaRepository = danhMucChuyenKhoaRepository;
     }
 
     @Override
@@ -120,7 +126,48 @@ public class SeedData implements CommandLineRunner {
             );
             benhVienRepository.saveAll(danhSachBenhVien);
 
-            System.out.println("Đã khởi tạo xong dữ liệu mẫu với 10 bệnh viện lớn!");
+            // Chỉ thêm dữ liệu mẫu nếu bảng danh_muc_chuyen_khoa đang trống
+            if (danhMucChuyenKhoaRepository.count() == 0) {
+                System.out.println("Đang khởi tạo dữ liệu mẫu cho bảng Danh Mục Chuyên Khoa...");
+
+                DanhMucChuyenKhoa ck1 = new DanhMucChuyenKhoa();
+                ck1.setTenDanhMuc("Nội khoa");
+
+                DanhMucChuyenKhoa ck2 = new DanhMucChuyenKhoa();
+                ck2.setTenDanhMuc("Ngoại khoa");
+
+                DanhMucChuyenKhoa ck3 = new DanhMucChuyenKhoa();
+                ck3.setTenDanhMuc("Sản phụ khoa");
+
+                DanhMucChuyenKhoa ck4 = new DanhMucChuyenKhoa();
+                ck4.setTenDanhMuc("Nhi khoa");
+
+                DanhMucChuyenKhoa ck5 = new DanhMucChuyenKhoa();
+                ck5.setTenDanhMuc("Tai mũi họng");
+
+                DanhMucChuyenKhoa ck6 = new DanhMucChuyenKhoa();
+                ck6.setTenDanhMuc("Răng hàm mặt");
+
+                DanhMucChuyenKhoa ck7 = new DanhMucChuyenKhoa();
+                ck7.setTenDanhMuc("Da liễu");
+
+                DanhMucChuyenKhoa ck8 = new DanhMucChuyenKhoa();
+                ck8.setTenDanhMuc("Tim mạch");
+
+                DanhMucChuyenKhoa ck9 = new DanhMucChuyenKhoa();
+                ck9.setTenDanhMuc("Thần kinh");
+
+                DanhMucChuyenKhoa ck10 = new DanhMucChuyenKhoa();
+                ck10.setTenDanhMuc("Cơ xương khớp");
+
+                // Lưu toàn bộ 10 chuyên khoa vào Database
+                List<DanhMucChuyenKhoa> danhSachChuyenKhoa = Arrays.asList(
+                    ck1, ck2, ck3, ck4, ck5, ck6, ck7, ck8, ck9, ck10
+                );
+                danhMucChuyenKhoaRepository.saveAll(danhSachChuyenKhoa);
+            }
+
+            System.out.println("Đã khởi tạo xong dữ liệu mẫu!");
         }
     }
 }

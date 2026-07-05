@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{_layout}">
+<head>
+    <title>Danh Mục Chuyên Khoa - MediQueue</title>
+    <link rel="stylesheet" th:href="@{/css/Index.css}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+</head>
+<body>
+
+<div layout:fragment="content" class="container-fluid fade-in-up mt-4">
+
+    <div class="row mb-4 g-3 align-items-stretch">
+        <div class="col-md-4">
+            <div class="stat-card h-100 d-flex align-items-center">
+                <div class="stat-icon">
+                    <i class="bi bi-tags-fill"></i>
+                </div>
+                <div class="stat-info">
+                    <h6>Tổng Số Danh Mục</h6>
+                    <h3 id="totalCount" th:text="${#lists.size(danhSachDanhMuc)}">0</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="stat-card h-100 d-flex align-items-center justify-content-between">
+                <div>
+                    <h2 class="page-title mb-1">TỪ ĐIỂN CHUYÊN KHOA</h2>
+                    <p class="text-secondary mb-0 small">Quản lý danh mục chuyên khoa chuẩn trên toàn hệ thống</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="button" onclick="showCreateCategoryPopup()" class="btn btn-primary-medical text-decoration-none">
+                        <i class="bi bi-plus-lg me-1"></i> Thêm mới
+                    </button>
+                </div>  
+            </div>
+        </div>
+    </div>
+
+    <div class="glass-container">
+        <div class="toolbar-wrapper mb-3">
+            <div class="search-box-medical">
+                <i class="bi bi-search"></i>
+                <input type="text" id="searchCategory" placeholder="Tìm kiếm tên chuyên khoa..." autocomplete="off">
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table custom-table align-middle" id="categoryTable">
+                <thead>
+                    <tr>
+                        <th class="text-center" style="width: 10%">#</th>
+                        <th class="text-center">Tên Chuyên Khoa Gốc</th>
+                        <th class="text-center" style="width: 25%">Tác vụ quản lý</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="item, iterStat : ${danhSachDanhMuc}">
+                        <td class="text-center text-muted fw-bold" th:text="${iterStat.count}">1</td>
+
+                        <td class="text-center fw-semibold">
+                            <div class="clinic-name-text">
+                                <span th:text="${item.tenDanhMuc}">Tên Chuyên Khoa</span>
+                            </div>
+                        </td>
+                        
+                        <td>
+                            <div class="d-flex justify-content-center gap-2">
+                                
+                                <button type="button" class="btn-icon-medical btn-warning-glow" 
+                                        th:onclick="showEditCategoryPopup([[${item.maDanhMuc}]], [[${item.tenDanhMuc}]])" 
+                                        title="Sửa tên">
+                                    <i class="bi bi-pencil-square"></i>
+                                </button>
+
+                                <button class="btn-icon-medical btn-danger-glow" th:onclick="'confirmDelete(' + ${item.maDanhMuc} + ')'" title="Xóa">
+                                    <i class="bi bi-trash-fill"></i>
+                                </button>
+
+                            </div>
+
+                            <form th:id="'deleteForm-' + ${item.maDanhMuc}" method="post" th:action="@{/danhmucchuyenkhoa/delete/{id}(id=${item.maDanhMuc})}" style="display:none;">
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div id="noResults" class="text-center py-5" style="display: none;">
+                <div class="mb-3">
+                    <i class="bi bi-search no-result-icon"></i>
+                </div>
+                <h5 class="text-light">Không tìm thấy danh mục nào</h5>
+                <p class="text-secondary">Vui lòng thử lại với từ khóa khác.</p>
+                <button type="button" onclick="pageConfig.clearSearch()" class="btn btn-outline-info mt-2 rounded-pill px-4">
+                    <i class="bi bi-arrow-clockwise me-1"></i> Hiển thị tất cả
+                </button>
+            </div>
+        </div>
+
+        <div class="table-footer d-flex justify-content-between align-items-center mt-auto pt-3" style="border-top: 1px solid var(--border-color)">
+            <span class="text-secondary small">Đang hiển thị <strong id="visibleCount" class="text-light">0</strong> danh mục</span>
+            <ul id="pagination" class="pagination-medical">
+            </ul>
+        </div>
+    </div>
+</div>
+
+<th:block layout:fragment="scripts">
+    <input type="hidden" id="successMessage" th:value="${successMessage}" />
+    <input type="hidden" id="errorMessage" th:value="${errorMessage}" />
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script th:src="@{/js/Delete.js}"></script>
+    <script th:src="@{/js/Success.js}"></script>
+    <script th:src="@{/js/Error.js}"></script>
+    <script th:src="@{/js/PhanTrang.js}"></script>
+    <script th:src="@{/js/Search.js}"></script>
+
+    <script>
+        var pageConfig;
+        document.addEventListener("DOMContentLoaded", function () {
+            pageConfig = new TablePaginator({
+                tableId: 'categoryTable',
+                searchInputId: 'searchCategory',
+                paginationId: 'pagination',
+                visibleCountId: 'visibleCount',
+                noResultsId: 'noResults',
+                rowsPerPage: 10
+            });
+
+            searchConfig = new TableSearcher({
+                searchInputId: 'searchCategory',
+                paginator: pageConfig
+            });
+        });
+    </script>
+
+    <script>
+        // Hàm 1: Popup Thêm Danh Mục Mới
+        async function showCreateCategoryPopup() {
+            const { value: tenKhoa } = await Swal.fire({
+                title: 'Thêm Danh Mục Mới',
+                input: 'text',
+                inputLabel: 'Tên chuyên khoa gốc',
+                inputPlaceholder: 'Nhập tên chuyên khoa...',
+                showCancelButton: true,
+                confirmButtonText: '<i class="bi bi-floppy-fill me-1"></i> Lưu lại',
+                cancelButtonText: 'Hủy bỏ',
+                confirmButtonColor: 'var(--primary-color)',
+                cancelButtonColor: 'rgba(255, 255, 255, 0.1)', 
+                background: 'var(--surface-bg, #1e1e2d)', 
+                color: 'var(--text-main, #fff)',
+                customClass: { popup: 'swal-dark-popup', title: 'swal-dark-title', inputLabel: 'swal-dark-label', input: 'swal-dark-input' },
+                inputValidator: (value) => {
+                    if (!value || value.trim() === '') return 'Vui lòng không để trống tên chuyên khoa!';
+                }
+            });
+
+            if (tenKhoa) {
+                try {
+                    const response = await fetch('/api/danhmucchuyenkhoa', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ tenDanhMuc: tenKhoa.trim() })
+                    });
+                    await handleResponse(response, 'Đã thêm danh mục mới vào hệ thống.');
+                } catch (error) {
+                    fallbackError('Không thể kết nối đến máy chủ.');
+                }
+            }
+        }
+
+        // Hàm 2: Popup Sửa Danh Mục
+        async function showEditCategoryPopup(id, oldName) {
+            const { value: newName } = await Swal.fire({
+                title: 'Cập Nhật Danh Mục',
+                input: 'text',
+                inputValue: oldName, 
+                inputLabel: 'Tên chuyên khoa gốc',
+                showCancelButton: true,
+                confirmButtonText: '<i class="bi bi-check-circle-fill me-1"></i> Cập nhật',
+                cancelButtonText: 'Hủy bỏ',
+                confirmButtonColor: '#f59e0b', 
+                cancelButtonColor: 'rgba(255, 255, 255, 0.1)', 
+                background: 'var(--surface-bg, #1e1e2d)', 
+                color: 'var(--text-main, #fff)',
+                customClass: { popup: 'swal-dark-popup', title: 'swal-dark-title', inputLabel: 'swal-dark-label', input: 'swal-dark-input' },
+                inputValidator: (value) => {
+                    if (!value || value.trim() === '') return 'Vui lòng không để trống tên chuyên khoa!';
+                    if (value.trim() === oldName) return 'Tên chưa được thay đổi!';
+                }
+            });
+
+            if (newName) {
+                try {
+                    const response = await fetch(`/api/danhmucchuyenkhoa/${id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ tenDanhMuc: newName.trim() })
+                    });
+                    await handleResponse(response, 'Đã cập nhật tên danh mục thành công.');
+                } catch (error) {
+                    fallbackError('Không thể kết nối đến máy chủ.');
+                }
+            }
+        }
+
+        // Hàm 3: Đã Bổ Sung - Xử lý Response và gọi popup thành công/lỗi
+        async function handleResponse(response, successMessage) {
+            const responseData = await response.text(); 
+
+            if (response.ok) {
+                if (typeof showSuccessPopup === "function") {
+                    showSuccessPopup(successMessage);
+                } else {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Thành công!',
+                        text: successMessage,
+                        timer: 1500,
+                        showConfirmButton: false,
+                        background: 'var(--surface-bg, #1e1e2d)',
+                        color: '#fff',
+                        customClass: { popup: 'swal-dark-popup' }
+                    }).then(() => window.location.reload());
+                }
+            } else {
+                fallbackError(responseData || 'Đã xảy ra lỗi hệ thống. Vui lòng thử lại.');
+            }
+        }
+
+        // Hàm 4: Đã Bổ Sung - Xử lý khi có lỗi
+        function fallbackError(message) {
+            if (typeof showErrorPopup === "function") {
+                showErrorPopup(message);
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi!',
+                    text: message,
+                    background: 'var(--surface-bg, #1e1e2d)',
+                    color: '#fff',
+                    customClass: { popup: 'swal-dark-popup' }
+                });
+            }
+        }
+    </script>
+</th:block>
+
+</body>
+</html>
