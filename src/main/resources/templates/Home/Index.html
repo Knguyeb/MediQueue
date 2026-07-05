@@ -38,19 +38,22 @@
             <div class="col" th:each="bv : ${danhSachBenhVien}">
                 <div class="card h-100 hospital-card">
 
-                    <div class="card-img-wrapper">
-                       <img th:if="${bv.hinhAnh != null and !bv.hinhAnh.isEmpty()}" 
-                            th:src="@{'/images/' + ${#strings.arraySplit(bv.hinhAnh, ';')[0]}}" 
+                   <div class="card-img-wrapper">
+                        <th:block th:if="${bv.hinhAnh != null and !bv.hinhAnh.isEmpty()}"
+                                th:with="firstImg=${#strings.trim(#strings.arraySplit(#strings.replace(bv.hinhAnh, ';', ','), ',')[0])}">
+                                
+                            <img th:src="@{${#strings.startsWith(firstImg, '/') ? firstImg : '/images/' + firstImg}}" 
+                                class="card-img-top w-100 h-100" 
+                                style="object-fit: cover;"
+                                onerror="this.onerror=null; this.src='/images/Logo.png'"
+                                th:alt="${bv.tenBenhVien}" />
+                        </th:block>
+
+                        <img th:unless="${bv.hinhAnh != null and !bv.hinhAnh.isEmpty()}" 
+                            th:src="@{/images/Logo.png}" 
                             class="card-img-top w-100 h-100" 
                             style="object-fit: cover;"
-                            onerror="this.onerror=null; this.src='/images/Logo.png'"
-                            th:alt="${bv.tenBenhVien}" />
-                             
-                        <img th:unless="${bv.hinhAnh != null and !bv.hinhAnh.isEmpty()}" 
-                             th:src="@{/images/Logo.png}" 
-                             class="card-img-top w-100 h-100" 
-                             style="object-fit: cover;"
-                             alt="No Image" />
+                            alt="No Image" />
 
                         <div class="rating-badge">
                             <span><i class="fas fa-star me-1"></i> 5.0</span>
@@ -64,7 +67,7 @@
                             <span th:text="${bv.diaChi}">Địa chỉ</span>
                         </p>
                         
-                        <a th:href="@{/benhvien/chitiet/{id}(id=${bv.maBenhVien})}" class="btn btnChiTiet mt-auto">
+                        <a th:href="@{/benhvien/details/{id}(id=${bv.maBenhVien})}" class="btn btnChiTiet mt-auto">
                             Xem chi tiết <i class="fas fa-arrow-right ms-1"></i>
                         </a>
                     </div>
@@ -123,11 +126,18 @@
                                 if(data && data.length > 0) {
                                     let html = '';
                                     data.forEach(item => {
-                                        let firstImg = item.hinhAnh ? item.hinhAnh.split(';')[0] : 'Logo.png';
-                                        
+                                        let firstImg = item.hinhAnh ? item.hinhAnh.replace(/;/g, ',').split(',')[0].trim() : '';
+
+                                        // Kiểm tra: Nếu có ảnh nhưng thiếu chữ / ở đầu thì cộng thêm /images/
+                                        if (firstImg !== '' && !firstImg.startsWith('/')) {
+                                            firstImg = '/images/' + firstImg;
+                                        } else if (firstImg === '') {
+                                            firstImg = '/images/Logo.png';
+                                        }
+
                                         html += `
                                             <a href="/benhvien/chitiet/${item.maBenhVien}" class="search-dropdown-item">
-                                                <img src="/images/${firstImg}" alt="${item.tenBenhVien}" class="me-3 rounded" style="width: 50px; height: 50px; object-fit: cover;" onerror="this.onerror=null; this.src='/images/Logo.png'" />
+                                                <img src="${firstImg}" alt="${item.tenBenhVien}" class="me-3 rounded" style="width: 50px; height: 50px; object-fit: cover;" onerror="this.onerror=null; this.src='/images/Logo.png'" />
                                                 <div>
                                                     <div class="fw-bold mb-1">${item.tenBenhVien}</div>
                                                     <small style="color: #a1a1aa;"><i class="fas fa-map-marker-alt text-danger me-1"></i> ${item.diaChi}</small>

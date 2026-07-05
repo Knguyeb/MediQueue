@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -76,6 +77,20 @@ public class BenhVienController {
         return "redirect:/benhvien/index"; 
     }
 
+
+    @GetMapping("/benhvien/details/{id}")
+    public String details(@PathVariable Integer id, Model model, RedirectAttributes redirectAttributes) {
+        Optional<BenhVien> opt = benhVienService.findById(id);
+        
+        if (opt.isPresent()) {
+            model.addAttribute("benhVien", opt.get());
+            return "benhvien/details"; // Trả về file templates/benhvien/Details.html
+        } else {
+            redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy dữ liệu bệnh viện!");
+            return "redirect:/benhvien/index";
+        }
+    }
+
     @GetMapping("/benhvien/edit/{id}")
     public String edit(@PathVariable Integer id, Model model, RedirectAttributes redirectAttributes) {
         Optional<BenhVien> opt = benhVienService.findById(id);
@@ -91,19 +106,44 @@ public class BenhVienController {
 
     @PostMapping("/benhvien/edit")
     public String updateBenhVien(@ModelAttribute BenhVien benhVien, 
-                                 @RequestParam(value = "HinhAnhFiles", required = false) List<MultipartFile> hinhAnhFiles,
-                                 RedirectAttributes redirectAttributes) {
+                                @RequestParam(value = "HinhAnhFiles", required = false) List<MultipartFile> hinhAnhFiles,
+                                @RequestParam(value = "DeletedImageIds", required = false) String deletedImageIds, // 1. Nhận danh sách ảnh cần xóa
+                                RedirectAttributes redirectAttributes) {
         try {
-            // Xử lý ảnh khi cập nhật
-            if (hinhAnhFiles != null && !hinhAnhFiles.isEmpty() && !hinhAnhFiles.get(0).isEmpty()) {
-                // Nếu có tải lên ảnh mới -> lưu ảnh mới
-                String hinhAnhChuoi = saveImages(hinhAnhFiles);
-                benhVien.setHinhAnh(hinhAnhChuoi);
-            } else {
-                // Nếu không chọn ảnh mới -> lấy lại chuỗi ảnh cũ từ DB để tránh bị ghi đè thành rỗng
-                benhVienService.findById(benhVien.getMaBenhVien()).ifPresent(
-                    oldBenhVien -> benhVien.setHinhAnh(oldBenhVien.getHinhAnh())
-                );
+            // Lấy thông tin bệnh viện cũ từ Database để đối chiếu
+            Optional<BenhVien> oldBenhVienOpt = benhVienService.findById(benhVien.getMaBenhVien());
+            
+            if (oldBenhVienOpt.isPresent()) {
+                BenhVien oldBenhVien = oldBenhVienOpt.get();
+                String currentImagesStr = oldBenhVien.getHinhAnh();
+                
+                // Khởi tạo danh sách chứa các ảnh hiện tại
+                List<String> currentImagesList = new ArrayList<>();
+                if (currentImagesStr != null && !currentImagesStr.trim().isEmpty()) {
+                    currentImagesList = new ArrayList<>(Arrays.asList(currentImagesStr.split(",")));
+                }
+
+                // 2. XỬ LÝ XÓA ẢNH: Lọc bỏ các ảnh mà người dùng đã bấm xóa trên giao diện
+                if (deletedImageIds != null && !deletedImageIds.isEmpty()) {
+                   // Đổi từ: deletedImageIds.split(",")
+                    List<String> imagesToDelete = Arrays.asList(deletedImageIds.split("[,;]"));
+                    currentImagesList.removeAll(imagesToDelete);
+                    
+                    // (Tùy chọn) Tại đây bạn có thể viết thêm code xóa file vật lý trong thư mục /images/ 
+                    // bằng java.nio.file.Files.deleteIfExists() để tiết kiệm dung lượng ổ cứng.
+                }
+
+                // 3. XỬ LÝ THÊM ẢNH MỚI: Nếu có upload thêm ảnh, lưu lại và nối vào danh sách hiện có
+                if (hinhAnhFiles != null && !hinhAnhFiles.isEmpty() && !hinhAnhFiles.get(0).isEmpty()) {
+                    String newImagesStr = saveImages(hinhAnhFiles);
+                    if (!newImagesStr.isEmpty()) {
+                        // Đổi từ: currentImagesStr.split(",")
+                        currentImagesList = new ArrayList<>(Arrays.asList(currentImagesStr.split("[,;]")));
+                    }
+                }
+
+                // 4. Gộp danh sách cuối cùng lại thành chuỗi phân cách bởi dấu phẩy và gán vào entity
+                benhVien.setHinhAnh(String.join(",", currentImagesList));
             }
             
             benhVienService.save(benhVien);

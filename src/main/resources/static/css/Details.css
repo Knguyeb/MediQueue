@@ -1,0 +1,221 @@
+/* Sử dụng lại các biến từ _Layout.css */
+
+/* =========================================
+   HIỆU ỨNG XUẤT HIỆN KHI LOAD TRANG
+   ========================================= */
+@keyframes fadeInScale {
+    0% { opacity: 0; transform: scale(0.95) translateY(20px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes fadeInUp {
+    0% { opacity: 0; transform: translateY(30px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+/* =========================================
+   1. BỐ CỤC CHUNG & CARD CHI TIẾT
+   ========================================= */
+.text-primary-custom {
+    color: var(--primary-color) !important;
+}
+
+.details-card {
+    background-color: var(--surface-bg);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+    padding: 40px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    animation: fadeInScale 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.details-card:hover {
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 20px var(--primary-glow);
+}
+
+.hospital-title {
+    color: var(--white);
+    font-weight: 800;
+    text-shadow: 0 2px 10px var(--primary-glow);
+    letter-spacing: 1px;
+}
+
+/* =========================================
+   2. KHU VỰC HÌNH ẢNH (CAROUSEL)
+   ========================================= */
+.custom-carousel {
+    border-radius: 15px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    opacity: 0;
+    animation: fadeInUp 0.6s ease-out 0.2s forwards;
+}
+
+.carousel-item img {
+    height: 350px;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.carousel-item:hover img {
+    transform: scale(1.05);
+}
+
+.no-image-box {
+    height: 350px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 15px;
+    border: 1px dashed rgba(255,255,255,0.2);
+}
+
+/* =========================================
+   3. KHU VỰC THÔNG TIN (DL / DT / DD)
+   ========================================= */
+.info-list {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 25px 20px;
+    border-radius: 15px;
+    border: 1px solid rgba(255,255,255,0.05);
+    opacity: 0;
+    animation: fadeInUp 0.6s ease-out 0.3s forwards;
+    row-gap: 18px;
+}
+
+.info-list dt {
+    font-weight: 600;
+    color: var(--text-muted);
+    font-size: 1.05rem;
+}
+
+.info-list dd {
+    margin-bottom: 0;
+    font-size: 1.05rem;
+}
+
+.badge-rating {
+    background-color: var(--primary-color);
+    color: white;
+    font-size: 1rem;
+    padding: 8px 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px var(--primary-glow);
+}
+
+/* =========================================
+   4. CÁC NÚT ĐIỀU HƯỚNG
+   ========================================= */
+.action-box {
+    border-top: 1px dashed var(--border-color);
+    opacity: 0;
+    animation: fadeInUp 0.6s ease-out 0.5s forwards;
+}
+
+.btn-custom {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 25px;
+    border-radius: 30px;
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+/* Nút Quay lại - Đỏ Luxury */
+.btn-back {
+    color: #FF3333 !important;
+    border: 1px solid #FF3333 !important;
+}
+.btn-back:hover {
+    background: #FF3333 !important;
+    color: var(--white) !important;
+    box-shadow: 0 0 15px rgba(255, 51, 51, 0.5);
+    transform: translateY(-2px);
+}
+
+/* Nút Chỉnh sửa - Vàng Gold */
+.btn-edit {
+    color: #FFD700 !important;
+    border: 1px solid #FFD700 !important;
+}
+.btn-edit:hover {
+    background: #FFD700 !important;
+    color: #111111 !important; /* Chữ tối để nổi bật trên nền vàng khi hover */
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+    transform: translateY(-2px);
+}
+
+/* Nút Đặt lịch - Giữ nguyên tông Tím Công Nghệ */
+.btn-book {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
+    color: var(--white);
+    border: none;
+    box-shadow: 0 4px 15px var(--primary-glow);
+}
+.btn-book:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.6);
+    color: var(--white);
+}
+
+/* =========================================
+   5. DANH SÁCH CHUYÊN KHOA
+   ========================================= */
+.border-top-dashed {
+    border-top: 1px dashed rgba(139, 92, 246, 0.4);
+}
+
+.section-title {
+    color: var(--primary-color);
+    font-weight: 700;
+}
+
+.department-card {
+    background: rgba(0,0,0,0.2);
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.department-card:hover {
+    transform: translateY(-8px);
+    border-color: var(--primary-color);
+    box-shadow: 0 10px 25px var(--primary-glow);
+    background: rgba(139, 92, 246, 0.05);
+}
+
+.icon-wrapper i {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+}
+
+.btn-outline-primary-custom {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-outline-primary-custom:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* =========================================
+   6. BẢN ĐỒ OPENSTREETMAP
+   ========================================= */
+#map {
+    height: 400px;
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+}
+
+.leaflet-popup-content-wrapper {
+    background: #ffffff !important; /* Popup bản đồ để nền trắng cho dễ đọc */
+    color: #000 !important;
+    border-radius: 12px;
+}
+.leaflet-popup-tip {
+    background: #ffffff !important;
+}

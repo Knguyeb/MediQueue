@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{_layout}">
+<head>
+    <title>Chi tiết Bệnh viện</title>
+    <link rel="stylesheet" th:href="@{/css/Details.css}" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+</head>
+<body>
+
+    <div layout:fragment="content">
+        <div class="details-container container py-5">
+            <div class="card details-card">
+
+                <h1 class="mb-5 text-center text-uppercase hospital-title" th:text="${benhVien.TenBenhVien}">TÊN BỆNH VIỆN</h1>
+
+                <div class="row g-5">
+                    <div class="col-lg-5 text-center">
+                       <th:block th:if="${benhVien.HinhAnh != null and !#strings.isEmpty(benhVien.HinhAnh)}">
+                            <div id="hospitalCarousel" class="carousel slide shadow-lg custom-carousel" data-bs-ride="carousel" data-bs-interval="3000">
+                                
+                                <div class="carousel-indicators">
+                                    <button th:each="url, iterStat : ${#strings.arraySplit(#strings.replace(benhVien.HinhAnh, ';', ','), ',')}"
+                                            type="button" 
+                                            data-bs-target="#hospitalCarousel" 
+                                            th:data-bs-slide-to="${iterStat.index}" 
+                                            th:classappend="${iterStat.index == 0} ? 'active' : ''" 
+                                            th:aria-current="${iterStat.index == 0} ? 'true' : 'false'">
+                                    </button>
+                                </div>
+
+                                <div class="carousel-inner">
+                                    <div th:each="url, iterStat : ${#strings.arraySplit(#strings.replace(benhVien.HinhAnh, ';', ','), ',')}" 
+                                        class="carousel-item" 
+                                        th:classappend="${iterStat.index == 0} ? 'active' : ''"
+                                        th:with="cleanUrl=${#strings.trim(url)}">
+                                        
+                                        <img th:src="@{${#strings.startsWith(cleanUrl, '/') ? cleanUrl : '/images/' + cleanUrl}}" 
+                                            alt="Ảnh bệnh viện" class="d-block w-100 img-fluid" onerror="this.onerror=null; this.src='/images/Logo.png'">
+                                    </div>
+                                </div>
+
+                                <button class="carousel-control-prev" type="button" data-bs-target="#hospitalCarousel" data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Previous</span>
+                                </button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#hospitalCarousel" data-bs-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Next</span>
+                                </button>
+                            </div>
+                        </th:block>
+
+                        <th:block th:if="${benhVien.HinhAnh == null or #strings.isEmpty(benhVien.HinhAnh)}">
+                            <div class="no-image-box d-flex flex-column align-items-center justify-content-center">
+                                <i class="bi bi-images fa-3x mb-3 text-muted"></i>
+                                <p class="text-muted m-0">Chưa có hình ảnh</p>
+                            </div>
+                        </th:block>
+                    </div>
+
+                    <div class="col-lg-7 d-flex flex-column justify-content-between">
+                        <div>
+                            <dl class="row align-items-center info-list m-0">
+                                <dt class="col-sm-4"><i class="bi bi-hospital-fill text-primary-custom me-2"></i> Tên cơ sở</dt>
+                                <dd class="col-sm-8 fs-5 fw-bold text-primary-custom" th:text="${benhVien.TenBenhVien}"></dd>
+
+                                <dt class="col-sm-4"><i class="bi bi-geo-alt-fill text-danger me-2"></i> Địa chỉ</dt>
+                                <dd class="col-sm-8" th:text="${benhVien.DiaChi}"></dd>
+
+                                <dt class="col-sm-4"><i class="bi bi-telephone-fill text-success me-2"></i> Điện thoại</dt>
+                                <dd class="col-sm-8 fw-bold" th:text="${benhVien.SoDienThoai}"></dd>
+
+                                <dt class="col-sm-4"><i class="bi bi-envelope-fill text-info me-2"></i> Email</dt>
+                                <dd class="col-sm-8">
+                                    <span th:if="${benhVien.Email != null}" th:text="${benhVien.Email}"></span>
+                                    <span th:unless="${benhVien.Email != null}" class="text-muted fst-italic">Chưa cập nhật</span>
+                                </dd>
+
+                                <dt class="col-sm-4"><i class="bi bi-star-fill text-warning me-2"></i> Đánh giá</dt>
+                                <dd class="col-sm-8 d-flex align-items-center">
+                                    <span class="badge badge-rating">
+                                        <i class="bi bi-star-fill"></i> 4.8 / 5
+                                    </span>
+                                    <small class="text-muted ms-2 fst-italic">(124 lượt đánh giá)</small>
+                                </dd>
+                            </dl>
+                        </div>
+
+                        <div class="action-box d-flex justify-content-between align-items-center mt-4 pt-3">
+                            <div>
+                                <a class="btn-custom btn-back" href="javascript:void(0)" onclick="history.back()">
+                                    <i class="bi bi-arrow-left me-2"></i> Quay lại
+                                </a>
+                            </div>
+
+                            <div class="d-flex gap-3">
+                                <a class="btn-custom btn-edit" th:href="@{/benhvien/edit/{id}(id=${benhVien.MaBenhVien})}">
+                                    <i class="bi bi-pencil-square me-2"></i> Chỉnh sửa
+                                </a>
+                                
+                                <a class="btn-custom btn-book" href="#">
+                                    <i class="bi bi-calendar-plus me-2"></i> Đặt lịch khám
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-5 pt-4 border-top-dashed">
+                    <h3 class="section-title mb-4"><i class="bi bi-heart-pulse-fill me-2"></i> Top Chuyên Khoa Nổi Bật</h3>
+
+                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                        <div class="col">
+                            <div class="card department-card h-100">
+                                <div class="card-body text-center">
+                                    <div class="icon-wrapper mb-3">
+                                        <i class="bi bi-bandaid"></i>
+                                    </div>
+                                    <h5 class="card-title fw-bold">Khoa Ngoại Tổng Hợp</h5>
+                                    <p class="text-muted small">Khám và điều trị phẫu thuật công nghệ cao, ít xâm lấn.</p>
+                                    <a href="#" class="btn btn-outline-primary-custom btn-sm rounded-pill px-4 mt-2">Xem chi tiết</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col">
+                            <div class="card department-card h-100">
+                                <div class="card-body text-center">
+                                    <div class="icon-wrapper mb-3">
+                                        <i class="bi bi-lungs"></i>
+                                    </div>
+                                    <h5 class="card-title fw-bold">Khoa Nội Hô Hấp</h5>
+                                    <p class="text-muted small">Chuyên điều trị các bệnh lý về phổi, hen suyễn, viêm phế quản.</p>
+                                    <a href="#" class="btn btn-outline-primary-custom btn-sm rounded-pill px-4 mt-2">Xem chi tiết</a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col">
+                            <div class="card department-card h-100">
+                                <div class="card-body text-center">
+                                    <div class="icon-wrapper mb-3">
+                                        <i class="bi bi-person-wheelchair"></i>
+                                    </div>
+                                    <h5 class="card-title fw-bold">Khoa Phục Hồi Chức Năng</h5>
+                                    <p class="text-muted small">Vật lý trị liệu chuyên sâu kết hợp trang thiết bị hiện đại.</p>
+                                    <a href="#" class="btn btn-outline-primary-custom btn-sm rounded-pill px-4 mt-2">Xem chi tiết</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-5 pt-4 border-top-dashed">
+                    <h3 class="section-title text-center mb-4"><i class="bi bi-map-fill me-2"></i> Vị trí trên bản đồ</h3>
+                    <div id="map" class="shadow-lg"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <th:block layout:fragment="scripts">
+        <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+        <script th:inline="javascript">
+            document.addEventListener("DOMContentLoaded", () => {
+                const mapContainer = document.getElementById("map");
+
+                // Lấy dữ liệu từ Thymeleaf thông qua th:inline="javascript"
+                const hospitalName = /*[[${benhVien.TenBenhVien}]]*/ 'Bệnh viện';
+                const address = /*[[${benhVien.DiaChi}]]*/ '';
+                const lat = /*[[${benhVien.ViDo}]]*/ 0;
+                const lon = /*[[${benhVien.KinhDo}]]*/ 0;
+
+                if (!lat || !lon || lat === 0 || lon === 0) {
+                    mapContainer.innerHTML = "<div class='h-100 d-flex align-items-center justify-content-center bg-dark rounded'><p class='text-muted text-center m-0'><i class='bi bi-exclamation-triangle-fill text-warning me-2'></i> Chưa có tọa độ hợp lệ để hiển thị bản đồ.</p></div>";
+                    return;
+                }
+
+                const map = L.map("map").setView([lat, lon], 16);
+                L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                    maxZoom: 18,
+                    attribution: '© OpenStreetMap'
+                }).addTo(map);
+
+                // Custom Icon Bản đồ (Chuyển sang màu Tím Y Học)
+                const customIcon = L.divIcon({
+                    className: 'custom-div-icon',
+                    html: `
+                        <div style="display: flex; flex-direction: column; align-items: center; filter: drop-shadow(0px 5px 10px var(--primary-glow));">
+                            <div style="background-color: var(--primary-color); width: 40px; height: 40px; border-radius: 50%; border: 3px solid #FFF; display: flex; align-items: center; justify-content: center; color: white; font-size: 18px;">
+                                <i class="bi bi-hospital"></i>
+                            </div>
+                            <div style="width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-top: 12px solid #FFF; margin-top: -2px;"></div>
+                        </div>
+                    `,
+                    iconSize: [40, 52],
+                    iconAnchor: [20, 52],
+                    popupAnchor: [0, -45]
+                });
+
+                L.marker([lat, lon], {icon: customIcon})
+                    .addTo(map)
+                    .bindPopup(`
+                        <div style="text-align:center; padding: 10px 5px;">
+                            <strong style="font-size:15px; color: var(--primary-color); display:block; margin-bottom: 5px;">${hospitalName}</strong>
+                            <span style="font-size:13px; color: #333; display:block; margin-bottom: 10px;">${address}</span>
+                            <a href="https://www.google.com/maps/dir/?api=1&destination=${lat},${lon}"
+                               target="_blank"
+                               style="display: inline-block; background: var(--primary-color); color: #fff; padding: 6px 15px; border-radius: 20px; text-decoration: none; font-size: 12px; font-weight: 600;">
+                                <i class="bi bi-sign-turn-right-fill me-1"></i> Chỉ đường
+                            </a>
+                        </div>
+                    `)
+                    .openPopup();
+            });
+        </script>
+    </th:block>
+
+</body>
+</html>
