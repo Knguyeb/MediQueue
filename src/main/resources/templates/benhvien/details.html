@@ -163,17 +163,22 @@
         </div>
     </div>
 
-    <th:block layout:fragment="scripts">
+   <th:block layout:fragment="scripts">
         <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
         <script th:inline="javascript">
             document.addEventListener("DOMContentLoaded", () => {
                 const mapContainer = document.getElementById("map");
 
-                // Lấy dữ liệu từ Thymeleaf thông qua th:inline="javascript"
-                const hospitalName = /*[[${benhVien.TenBenhVien}]]*/ 'Bệnh viện';
-                const address = /*[[${benhVien.DiaChi}]]*/ '';
-                const lat = /*[[${benhVien.ViDo}]]*/ 0;
-                const lon = /*[[${benhVien.KinhDo}]]*/ 0;
+                // 1. Dùng đúng tên thuộc tính (chữ thường đầu tiên) theo chuẩn Getter của Java
+                const hospitalName = /*[[${benhVien.tenBenhVien}]]*/ 'Bệnh viện';
+                const address = /*[[${benhVien.diaChi}]]*/ '';
+                
+                // 2. Chuyển tọa độ thành chuỗi an toàn, sau đó replace dấu phẩy (đề phòng lỗi Locale) rồi mới ParseFloat
+                const latStr = /*[[${benhVien.viDo != null ? benhVien.viDo.toString() : '0'}]]*/ '0';
+                const lonStr = /*[[${benhVien.kinhDo != null ? benhVien.kinhDo.toString() : '0'}]]*/ '0';
+                
+                const lat = parseFloat(latStr.replace(',', '.'));
+                const lon = parseFloat(lonStr.replace(',', '.'));
 
                 if (!lat || !lon || lat === 0 || lon === 0) {
                     mapContainer.innerHTML = "<div class='h-100 d-flex align-items-center justify-content-center bg-dark rounded'><p class='text-muted text-center m-0'><i class='bi bi-exclamation-triangle-fill text-warning me-2'></i> Chưa có tọa độ hợp lệ để hiển thị bản đồ.</p></div>";
@@ -186,7 +191,6 @@
                     attribution: '© OpenStreetMap'
                 }).addTo(map);
 
-                // Custom Icon Bản đồ (Chuyển sang màu Tím Y Học)
                 const customIcon = L.divIcon({
                     className: 'custom-div-icon',
                     html: `
@@ -198,7 +202,7 @@
                         </div>
                     `,
                     iconSize: [40, 52],
-                    iconAnchor: [20, 52],
+                    iconAnchor: [20, 52], // Điểm neo của bạn đã thiết lập đúng
                     popupAnchor: [0, -45]
                 });
 
@@ -209,8 +213,8 @@
                             <strong style="font-size:15px; color: var(--primary-color); display:block; margin-bottom: 5px;">${hospitalName}</strong>
                             <span style="font-size:13px; color: #333; display:block; margin-bottom: 10px;">${address}</span>
                             <a href="https://www.google.com/maps/dir/?api=1&destination=${lat},${lon}"
-                               target="_blank"
-                               style="display: inline-block; background: var(--primary-color); color: #fff; padding: 6px 15px; border-radius: 20px; text-decoration: none; font-size: 12px; font-weight: 600;">
+                            target="_blank"
+                            style="display: inline-block; background: var(--primary-color); color: #fff; padding: 6px 15px; border-radius: 20px; text-decoration: none; font-size: 12px; font-weight: 600;">
                                 <i class="bi bi-sign-turn-right-fill me-1"></i> Chỉ đường
                             </a>
                         </div>
