@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{_layout}">
+<head>
+    <title>Quản lý Bác Sĩ - MediQueue</title>
+    <link rel="stylesheet" th:href="@{/css/Index.css}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+</head>
+<body>
+
+<div layout:fragment="content" class="container-fluid fade-in-up mt-4">
+
+    <div class="row mb-4 g-3 align-items-stretch">
+        <div class="col-md-4">
+            <div class="stat-card h-100 d-flex align-items-center">
+                <div class="stat-icon">
+                    <i class="bi bi-person-heart"></i>
+                </div>
+                <div class="stat-info">
+                    <h6>Tổng Số Bác Sĩ</h6>
+                    <h3 id="totalCount" th:text="${#lists.size(danhSachBacSi)}">0</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="stat-card h-100 d-flex align-items-center justify-content-between">
+                <div>
+                    <h2 class="page-title mb-1">DANH SÁCH BÁC SĨ</h2>
+                    <p class="text-secondary mb-0 small">Quản lý hồ sơ và thông tin công tác của đội ngũ y bác sĩ</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <a th:href="@{/bacsi/create}" class="btn btn-primary-medical text-decoration-none">
+                        <i class="bi bi-plus-lg me-1"></i> Thêm mới
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="glass-container">
+        <div class="toolbar-wrapper mb-3">
+            <div class="search-box-medical">
+                <i class="bi bi-search"></i>
+                <input type="text" id="searchDoctor" placeholder="Tìm kiếm tên, SĐT, chuyên khoa..." autocomplete="off">
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table custom-table align-middle" id="doctorTable">
+                <thead>
+                    <tr>
+                        <th class="text-center" style="width: 5%">#</th>
+                        <th class="text-center" style="width: 25%">Hồ sơ Bác sĩ</th>
+                        <th class="text-center" style="width: 30%">Đơn vị công tác</th>
+                        <th class="text-center" style="width: 15%">Tài khoản</th>
+                        <th class="text-center" style="width: 25%">Tác vụ quản lý</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="item, iterStat : ${danhSachBacSi}">
+                        <td class="text-center text-muted fw-bold" th:text="${iterStat.count}">1</td>
+                        
+                        <td class="text-center">
+                            <div class="clinic-name-text">
+                                <i class="bi bi-person-fill me-1"></i>
+                                <span>BS. </span><span th:text="${item.hoTen}">Tên Bác Sĩ</span>
+                            </div>
+                            <div class="address-text mt-1">
+                                <i class="bi bi-gender-ambiguous me-1"></i> 
+                                <span th:text="${item.gioiTinh != null ? (item.gioiTinh ? 'Nam' : 'Nữ') : 'Chưa cập nhật'}">Nam/Nữ</span>
+                                <span class="mx-1">|</span>
+                                <i class="bi bi-telephone me-1"></i> 
+                                <span th:text="${item.soDienThoai}">SĐT</span>
+                            </div>
+                            <div class="address-text mt-1" th:if="${item.email != null}">
+                                <i class="bi bi-envelope me-1"></i> 
+                                <span th:text="${item.email}">Email</span>
+                            </div>
+                        </td>
+                        
+                        <td class="text-center">
+                            <div class="fw-semibold text-info" style="font-size: 0.95rem;">
+                                <span th:text="${item.chuyenKhoa != null ? item.chuyenKhoa.tenDanhMuc : 'Chưa phân khoa'}">Chuyên khoa</span>
+                            </div>
+                            <div class="address-text mt-1">
+                                <i class="bi bi-hospital me-1"></i>
+                                <span th:text="${item.benhVien != null ? item.benhVien.tenBenhVien : 'Chưa có bệnh viện trực thuộc'}">Bệnh viện</span>
+                            </div>
+                        </td>
+                        
+                        <td class="text-center fw-semibold text-light">
+                            <span class="badge bg-danger px-3 py-2 rounded-pill">
+                                <i class="bi bi-person-badge me-1"></i> 
+                                <span th:text="${item.taiKhoan != null ? item.taiKhoan.tenDangNhap : 'N/A'}">Username</span>
+                            </span>
+                        </td>
+                        
+                        <td>
+                            <div class="d-flex justify-content-center gap-2">
+                                <a th:href="@{/bacsi/edit/{id}(id=${item.maBacSi})}" class="btn-icon-medical btn-warning-glow" title="Sửa thông tin">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+
+                                <button class="btn-icon-medical btn-danger-glow" th:onclick="'confirmDelete(' + ${item.maBacSi} + ')'" title="Xóa bác sĩ">
+                                    <i class="bi bi-trash-fill"></i>
+                                </button>
+                            </div>
+
+                            <form th:id="'deleteForm-' + ${item.maBacSi}" method="post" th:action="@{/bacsi/delete/{id}(id=${item.maBacSi})}" style="display:none;">
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div id="noResults" class="text-center py-5" style="display: none;">
+                <div class="mb-3">
+                    <i class="bi bi-search no-result-icon"></i>
+                </div>
+                <h5 class="text-light">Không tìm thấy bác sĩ nào</h5>
+                <p class="text-secondary">Vui lòng thử lại với từ khóa khác.</p>
+                <button type="button" onclick="searchConfig.clearSearch()" class="btn btn-outline-info mt-2 rounded-pill px-4">
+                    <i class="bi bi-arrow-clockwise me-1"></i> Hiển thị tất cả
+                </button>
+            </div>
+        </div>
+
+        <div class="table-footer d-flex justify-content-between align-items-center mt-auto pt-3" style="border-top: 1px solid var(--border-color)">
+            <span class="text-secondary small">Đang hiển thị <strong id="visibleCount" class="text-light">0</strong> bác sĩ</span>
+            <ul id="pagination" class="pagination-medical">
+            </ul>
+        </div>
+    </div>
+</div>
+
+<th:block layout:fragment="scripts">
+    <input type="hidden" id="successMessage" th:value="${successMessage}" />
+    <input type="hidden" id="errorMessage" th:value="${errorMessage}" />
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script th:src="@{/js/Delete.js}"></script>
+    <script th:src="@{/js/Success.js}"></script>
+    <script th:src="@{/js/PhanTrang.js}"></script>
+    <script th:src="@{/js/Search.js}"></script>
+
+    <script>
+        var pageConfig;
+        var searchConfig; 
+
+        document.addEventListener("DOMContentLoaded", function () {
+            // Khởi tạo bảng Bác sĩ (ID = doctorTable)
+            pageConfig = new TablePaginator({
+                tableId: 'doctorTable',
+                paginationId: 'pagination',
+                visibleCountId: 'visibleCount',
+                noResultsId: 'noResults',
+                rowsPerPage: 10
+            });
+
+            // Khởi tạo thanh tìm kiếm (ID = searchDoctor)
+            searchConfig = new TableSearcher({
+                searchInputId: 'searchDoctor',
+                paginator: pageConfig
+            });
+        });
+    </script>
+</th:block>
+
+</body>
+</html>

@@ -50,6 +50,30 @@
                             <a class="nav-link" th:href="@{/danhmucchuyenkhoa/index}">Danh mục chuyên khoa</a>
                         </li>
 
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="taiKhoanDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-people me-1"></i> Quản lý Người dùng
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="taiKhoanDropdown">
+                                <li>
+                                    <a class="dropdown-item" th:href="@{/quanly/index}">
+                                        <i class="bi bi-person-badge me-2 text-primary"></i> Quản lý
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" th:href="@{/bacsi/index}">
+                                        <i class="bi bi-person-heart me-2 text-success"></i> Bác sĩ
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item" th:href="@{/benhnhan/index}">
+                                        <i class="bi bi-person-wheelchair me-2 text-info"></i> Bệnh nhân
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
                         <li class="nav-item" th:if="${session.QuyenHan == 'Khách hàng'}">
                             <a class="nav-link" th:href="@{/lichkham}">Lịch khám của tôi</a>
                         </li>

@@ -1,27 +1,45 @@
 package com.khoinguyen.mediqueue.config;
 
+import com.khoinguyen.mediqueue.entity.BacSi;
+import com.khoinguyen.mediqueue.entity.BenhNhan;
 import com.khoinguyen.mediqueue.entity.BenhVien;
-import com.khoinguyen.mediqueue.repository.BenhVienRepository;
-
 import com.khoinguyen.mediqueue.entity.DanhMucChuyenKhoa;
+import com.khoinguyen.mediqueue.entity.QuanLy;
+import com.khoinguyen.mediqueue.repository.BenhVienRepository;
 import com.khoinguyen.mediqueue.repository.DanhMucChuyenKhoaRepository;
+import com.khoinguyen.mediqueue.service.BacSiService;
+import com.khoinguyen.mediqueue.service.BenhNhanService;
+import com.khoinguyen.mediqueue.service.QuanLyService;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
-@Component // Bắt buộc phải có @Component để Spring Boot tự động nhận diện và chạy class này
+@Component
 public class SeedData implements CommandLineRunner {
 
     private final BenhVienRepository benhVienRepository;
     private final DanhMucChuyenKhoaRepository danhMucChuyenKhoaRepository;
+    
+    // Inject thêm 3 Service để tự động sinh Tài khoản cho người dùng
+    private final QuanLyService quanLyService;
+    private final BacSiService bacSiService;
+    private final BenhNhanService benhNhanService;
 
-    // Inject Repository vào để thao tác với Database
-    public SeedData(BenhVienRepository benhVienRepository, DanhMucChuyenKhoaRepository danhMucChuyenKhoaRepository) {
+    public SeedData(BenhVienRepository benhVienRepository, 
+                    DanhMucChuyenKhoaRepository danhMucChuyenKhoaRepository,
+                    QuanLyService quanLyService, 
+                    BacSiService bacSiService, 
+                    BenhNhanService benhNhanService) {
         this.benhVienRepository = benhVienRepository;
         this.danhMucChuyenKhoaRepository = danhMucChuyenKhoaRepository;
+        this.quanLyService = quanLyService;
+        this.bacSiService = bacSiService;
+        this.benhNhanService = benhNhanService;
     }
 
     @Override
@@ -120,54 +138,86 @@ public class SeedData implements CommandLineRunner {
             bv10.setKinhDo(108.2155);
             bv10.setHinhAnh("bvdadanang1.jpg");
 
-            // Lưu toàn bộ 10 bệnh viện vào Database
-            List<BenhVien> danhSachBenhVien = Arrays.asList(
-                bv1, bv2, bv3, bv4, bv5, bv6, bv7, bv8, bv9, bv10
-            );
-            benhVienRepository.saveAll(danhSachBenhVien);
+            // Lưu toàn bộ 10 bệnh viện và lấy danh sách trả về để dùng cho Quản lý/Bác sĩ
+            List<BenhVien> danhSachBenhVien = Arrays.asList(bv1, bv2, bv3, bv4, bv5, bv6, bv7, bv8, bv9, bv10);
+            List<BenhVien> savedBenhViens = benhVienRepository.saveAll(danhSachBenhVien);
 
-            // Chỉ thêm dữ liệu mẫu nếu bảng danh_muc_chuyen_khoa đang trống
-            if (danhMucChuyenKhoaRepository.count() == 0) {
+            // =====================================================================
+            // TẠO DỮ LIỆU CHUYÊN KHOA
+            // =====================================================================
+            List<DanhMucChuyenKhoa> savedChuyenKhoas = danhMucChuyenKhoaRepository.findAll();
+            
+            if (savedChuyenKhoas.isEmpty()) {
                 System.out.println("Đang khởi tạo dữ liệu mẫu cho bảng Danh Mục Chuyên Khoa...");
+                DanhMucChuyenKhoa ck1 = new DanhMucChuyenKhoa(); ck1.setTenDanhMuc("Nội khoa");
+                DanhMucChuyenKhoa ck2 = new DanhMucChuyenKhoa(); ck2.setTenDanhMuc("Ngoại khoa");
+                DanhMucChuyenKhoa ck3 = new DanhMucChuyenKhoa(); ck3.setTenDanhMuc("Sản phụ khoa");
+                DanhMucChuyenKhoa ck4 = new DanhMucChuyenKhoa(); ck4.setTenDanhMuc("Nhi khoa");
+                DanhMucChuyenKhoa ck5 = new DanhMucChuyenKhoa(); ck5.setTenDanhMuc("Tai mũi họng");
+                DanhMucChuyenKhoa ck6 = new DanhMucChuyenKhoa(); ck6.setTenDanhMuc("Răng hàm mặt");
+                DanhMucChuyenKhoa ck7 = new DanhMucChuyenKhoa(); ck7.setTenDanhMuc("Da liễu");
+                DanhMucChuyenKhoa ck8 = new DanhMucChuyenKhoa(); ck8.setTenDanhMuc("Tim mạch");
+                DanhMucChuyenKhoa ck9 = new DanhMucChuyenKhoa(); ck9.setTenDanhMuc("Thần kinh");
+                DanhMucChuyenKhoa ck10 = new DanhMucChuyenKhoa(); ck10.setTenDanhMuc("Cơ xương khớp");
 
-                DanhMucChuyenKhoa ck1 = new DanhMucChuyenKhoa();
-                ck1.setTenDanhMuc("Nội khoa");
-
-                DanhMucChuyenKhoa ck2 = new DanhMucChuyenKhoa();
-                ck2.setTenDanhMuc("Ngoại khoa");
-
-                DanhMucChuyenKhoa ck3 = new DanhMucChuyenKhoa();
-                ck3.setTenDanhMuc("Sản phụ khoa");
-
-                DanhMucChuyenKhoa ck4 = new DanhMucChuyenKhoa();
-                ck4.setTenDanhMuc("Nhi khoa");
-
-                DanhMucChuyenKhoa ck5 = new DanhMucChuyenKhoa();
-                ck5.setTenDanhMuc("Tai mũi họng");
-
-                DanhMucChuyenKhoa ck6 = new DanhMucChuyenKhoa();
-                ck6.setTenDanhMuc("Răng hàm mặt");
-
-                DanhMucChuyenKhoa ck7 = new DanhMucChuyenKhoa();
-                ck7.setTenDanhMuc("Da liễu");
-
-                DanhMucChuyenKhoa ck8 = new DanhMucChuyenKhoa();
-                ck8.setTenDanhMuc("Tim mạch");
-
-                DanhMucChuyenKhoa ck9 = new DanhMucChuyenKhoa();
-                ck9.setTenDanhMuc("Thần kinh");
-
-                DanhMucChuyenKhoa ck10 = new DanhMucChuyenKhoa();
-                ck10.setTenDanhMuc("Cơ xương khớp");
-
-                // Lưu toàn bộ 10 chuyên khoa vào Database
-                List<DanhMucChuyenKhoa> danhSachChuyenKhoa = Arrays.asList(
-                    ck1, ck2, ck3, ck4, ck5, ck6, ck7, ck8, ck9, ck10
-                );
-                danhMucChuyenKhoaRepository.saveAll(danhSachChuyenKhoa);
+                List<DanhMucChuyenKhoa> listCk = Arrays.asList(ck1, ck2, ck3, ck4, ck5, ck6, ck7, ck8, ck9, ck10);
+                savedChuyenKhoas = danhMucChuyenKhoaRepository.saveAll(listCk);
             }
 
-            System.out.println("Đã khởi tạo xong dữ liệu mẫu!");
+            // =====================================================================
+            // TẠO DỮ LIỆU NGƯỜI DÙNG TỰ ĐỘNG
+            // =====================================================================
+            System.out.println("Đang tự động khởi tạo Quản lý, Bác sĩ, Bệnh nhân và cấp Tài khoản...");
+            
+            Random random = new Random();
+            String[] hoList = {"Nguyễn", "Trần", "Lê", "Phạm", "Hoàng", "Huỳnh", "Phan", "Vũ", "Võ", "Đặng"};
+            String[] tenDemList = {"Văn", "Thị", "Hoàng", "Minh", "Thanh", "Ngọc", "Thảo", "Quốc", "Gia", "Bảo"};
+            String[] tenList = {"Anh", "Tuấn", "Hương", "Trang", "Khoa", "Phát", "Linh", "Hà", "Long", "Đạt"};
+
+            // 1. Duyệt qua từng bệnh viện để thêm 1 Quản lý và 2 Bác sĩ
+            for (BenhVien bv : savedBenhViens) {
+                // --- THÊM 1 QUẢN LÝ ---
+                QuanLy ql = new QuanLy();
+                ql.setHoTen(hoList[random.nextInt(10)] + " " + tenDemList[random.nextInt(10)] + " " + tenList[random.nextInt(10)]);
+                ql.setSoDienThoai("09" + (10000000 + random.nextInt(90000000))); // Random SĐT 10 số
+                ql.setEmail("quanly." + bv.getMaBenhVien() + "@mediqueue.vn");
+                ql.setGioiTinh(random.nextBoolean());
+                ql.setBenhVien(bv);
+                // Dùng service để lưu (Nó sẽ tự cấp tên đăng nhập và mật khẩu '123')
+                quanLyService.themMoiQuanLy(ql); 
+
+                // --- THÊM 2 BÁC SĨ ---
+                for (int i = 0; i < 2; i++) {
+                    BacSi bs = new BacSi();
+                    bs.setHoTen(hoList[random.nextInt(10)] + " " + tenDemList[random.nextInt(10)] + " " + tenList[random.nextInt(10)]);
+                    bs.setSoDienThoai("09" + (10000000 + random.nextInt(90000000)));
+                    bs.setEmail("bacsi" + i + "." + bv.getMaBenhVien() + "@mediqueue.vn");
+                    bs.setGioiTinh(random.nextBoolean());
+                    bs.setBenhVien(bv);
+                    // Chọn ngẫu nhiên 1 chuyên khoa từ danh sách 10 chuyên khoa
+                    bs.setChuyenKhoa(savedChuyenKhoas.get(random.nextInt(savedChuyenKhoas.size())));
+                    
+                    bacSiService.themMoiBacSi(bs);
+                }
+            }
+
+            // 2. Tạo 3 Bệnh nhân (Không thuộc về bệnh viện nào)
+            for (int i = 1; i <= 3; i++) {
+                BenhNhan bn = new BenhNhan();
+                bn.setHoTen(hoList[random.nextInt(10)] + " " + tenDemList[random.nextInt(10)] + " " + tenList[random.nextInt(10)]);
+                bn.setSoDienThoai("09" + (10000000 + random.nextInt(90000000)));
+                bn.setEmail("benhnhan" + i + "@gmail.com");
+                bn.setGioiTinh(random.nextBoolean());
+                // Sinh ngày sinh ngẫu nhiên từ năm 1980 đến 2010
+                bn.setNgaySinh(LocalDate.of(1980 + random.nextInt(30), 1 + random.nextInt(11), 1 + random.nextInt(27)));
+                bn.setDiaChi("Thành phố Hồ Chí Minh");
+                
+                benhNhanService.themMoiBenhNhan(bn);
+            }
+
+            System.out.println("============== HOÀN TẤT SEED DATA ==============");
+            System.out.println("Đã thêm: 10 Bệnh viện, 10 Chuyên khoa, 10 Quản lý, 20 Bác sĩ, 3 Bệnh nhân");
+            System.out.println("Lưu ý: Mật khẩu mặc định của tất cả tài khoản đều là '123'");
         }
     }
 }

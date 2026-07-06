@@ -346,3 +346,55 @@ main.container {
 .btn-close {
     filter: invert(1) grayscale(100%) brightness(200%);
 }
+
+/* --------------------------------------
+   DROPDOWN MENU (DARK THEME)
+   -------------------------------------- */
+/* Định dạng hộp menu thả xuống */
+.dropdown-menu {
+    background-color: var(--surface-bg) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    padding: 0.5rem;
+    margin-top: 0.8rem !important; /* Tạo khoảng cách mượt mà với thanh nav */
+}
+
+/* Định dạng từng dòng item bên trong */
+.dropdown-item {
+    color: var(--text-main) !important;
+    border-radius: 6px;
+    padding: 0.6rem 1.2rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+}
+
+/* Hiệu ứng khi di chuột vào từng dòng item */
+.dropdown-item:hover, .dropdown-item:focus {
+    background-color: rgba(255, 255, 255, 0.1) !important; /* Nền sáng nhẹ */
+    color: var(--white) !important;
+    transform: translateX(4px); /* Trượt nhẹ chữ sang phải tạo cảm giác 3D */
+}
+
+/* Căn chỉnh icon bên trong dropdown để chữ luôn thẳng hàng */
+.dropdown-item i {
+    font-size: 1.1rem;
+    width: 24px;
+    text-align: center;
+}
+
+/* Đường kẻ ngang phân cách */
+.dropdown-divider {
+    border-top: 1px solid var(--border-color) !important;
+    margin: 0.5rem 0;
+    opacity: 0.5;
+}
+
+/* Giữ hiệu ứng sáng cho nút "Quản lý Người dùng" khi menu đang xổ xuống */
+.nav-item.dropdown .nav-link.show {
+    background-color: rgba(255, 255, 255, 0.15);
+    color: var(--white) !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
