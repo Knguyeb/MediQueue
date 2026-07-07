@@ -52,6 +52,11 @@ public class BacSi {
     @JoinColumn(name = "ma_danh_muc", referencedColumnName = "ma_danh_muc")
     private DanhMucChuyenKhoa chuyenKhoa;
 
+    // 4. Nhiều Bác sĩ có thể ngồi MỘT Phòng khám (Hoặc 1 Bác sĩ - 1 Phòng khám tùy logic)
+    @OneToOne
+    @JoinColumn(name = "ma_phong_kham", referencedColumnName = "ma_phong_kham")
+    private PhongKham phongKham;
+
     // =================================================================
     // GETTER VÀ SETTER
     // =================================================================
@@ -79,4 +84,7 @@ public class BacSi {
 
     public DanhMucChuyenKhoa getChuyenKhoa() { return chuyenKhoa; }
     public void setChuyenKhoa(DanhMucChuyenKhoa chuyenKhoa) { this.chuyenKhoa = chuyenKhoa; }
+
+    public PhongKham getPhongKham() { return phongKham; }
+    public void setPhongKham(PhongKham phongKham) { this.phongKham = phongKham; }
 }

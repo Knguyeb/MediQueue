@@ -99,6 +99,10 @@
 
                                 <div style="width: 1px; background: rgba(255,255,255,0.1); margin: 0 4px;"></div>
 
+                                <a th:href="@{/phongkham/index(maBenhVien=${item.maBenhVien})}" class="btn-icon-medical btn-emerald-glow" title="Quản lý Phòng khám">
+                                    <i class="bi bi-door-open-fill"></i>
+                                </a>
+                                
                                 <a th:href="@{/bacsi/index(maBenhVien=${item.maBenhVien})}" class="btn-icon-medical btn-purple-glow" title="Quản lý Bác sĩ">
                                     <i class="bi bi-person-heart"></i>
                                 </a>
