@@ -29,11 +29,14 @@
         <div class="col-md-8">
             <div class="stat-card h-100 d-flex align-items-center justify-content-between">
                 <div>
-                    <h2 class="page-title mb-1">DANH SÁCH BÁC SĨ</h2>
+                    <h2 class="page-title mb-1 text-uppercase" 
+                        th:text="${benhVienChuQuan != null ? 'BÁC SĨ - ' + benhVienChuQuan : 'DANH SÁCH BÁC SĨ'}">
+                        DANH SÁCH BÁC SĨ
+                    </h2>
                     <p class="text-secondary mb-0 small">Quản lý hồ sơ và thông tin công tác của đội ngũ y bác sĩ</p>
                 </div>
                 <div class="d-flex gap-2">
-                    <a th:href="@{/bacsi/create}" class="btn btn-primary-medical text-decoration-none">
+                    <a th:href="@{/bacsi/create(maBenhVien=${maBenhVien})}" class="btn btn-primary-medical text-decoration-none">
                         <i class="bi bi-plus-lg me-1"></i> Thêm mới
                     </a>
                 </div>
@@ -53,10 +56,11 @@
             <table class="table custom-table align-middle" id="doctorTable">
                 <thead>
                     <tr>
-                        <th class="text-center" style="width: 5%">#</th>
-                        <th class="text-center" style="width: 30%">Hồ sơ Bác sĩ</th>
-                        <th class="text-center" style="width: 40%">Đơn vị công tác</th>
-                        <th class="text-center" style="width: 25%">Tác vụ quản lý</th>
+                        <th class="text-center">#</th>
+                        <th class="text-center">Hồ sơ Bác sĩ</th>
+                        <th class="text-center">Chuyên khoa</th>
+                        <th class="text-center">Phòng phụ trách</th>
+                        <th class="text-center">Tác vụ quản lý</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -80,15 +84,34 @@
                                 <span th:text="${item.email}">Email</span>
                             </div>
                         </td>
+
+                        <td class="align-middle text-center">
+                            <th:block th:if="${item.chuyenKhoa != null}">
+                                <span class="text-info fw-semibold" style="font-size: 0.95rem;">
+                                    <i class="bi bi-heart-pulse-fill text-danger me-1"></i> 
+                                    <span th:text="${item.chuyenKhoa.tenDanhMuc}"></span>
+                                </span>
+                            </th:block>
+
+                            <th:block th:unless="${item.chuyenKhoa != null}">
+                                <span class="text-muted fst-italic" style="font-size: 0.85rem;">
+                                    Chưa cập nhật
+                                </span>
+                            </th:block>
+                        </td>
                         
-                        <td class="text-center">
-                            <div class="fw-semibold text-info" style="font-size: 0.95rem;">
-                                <span th:text="${item.chuyenKhoa != null ? item.chuyenKhoa.tenDanhMuc : 'Chưa phân khoa'}">Chuyên khoa</span>
-                            </div>
-                            <div class="address-text mt-1">
-                                <i class="bi bi-hospital me-1"></i>
-                                <span th:text="${item.benhVien != null ? item.benhVien.tenBenhVien : 'Chưa có bệnh viện trực thuộc'}">Bệnh viện</span>
-                            </div>
+                        <td class="text-center align-middle">
+                            <th:block th:if="${item.phongKham != null}">
+                                <span class="text-success fw-bold">
+                                    <i class="bi bi-door-open-fill me-1"></i> <span th:text="${item.phongKham.tenPhongKham}"></span>
+                                </span>
+                            </th:block>
+                            
+                            <th:block th:unless="${item.phongKham != null}">
+                                <span class="badge bg-danger bg-opacity-25 text-danger border border-danger border-opacity-50 rounded-pill px-3 py-2 shadow-sm" style="font-size: 0.85rem;">
+                                    <i class="bi bi-x-circle me-1"></i> Chưa xếp phòng
+                                </span>
+                            </th:block>
                         </td>
                         
                         <td>
