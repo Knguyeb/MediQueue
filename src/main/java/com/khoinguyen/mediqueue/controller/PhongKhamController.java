@@ -1,6 +1,9 @@
 package com.khoinguyen.mediqueue.controller;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Controller;
@@ -29,7 +32,6 @@ public class PhongKhamController {
     private final BacSiService bacSiService;
     private final DanhMucChuyenKhoaService danhMucChuyenKhoaService;
 
-    // Inject tất cả 4 service cần thiết
     public PhongKhamController(PhongKhamService phongKhamService, 
                                BenhVienService benhVienService, 
                                BacSiService bacSiService,
@@ -41,45 +43,41 @@ public class PhongKhamController {
     }
 
     // =================================================================
-    // 1. HIỂN THỊ DANH SÁCH (HỨNG PARAM TỪ NÚT BẤM)
+    // 1. HIỂN THỊ DANH SÁCH (BẮT BUỘC PHẢI CÓ MÃ BỆNH VIỆN)
     // =================================================================
     @GetMapping("/index")
-    public String index(@RequestParam(required = false) Integer maBenhVien, Model model) {
-        if (maBenhVien != null) {
-            model.addAttribute("danhSachPhongKham", phongKhamService.layDanhSachTheoBenhVien(maBenhVien));
-            benhVienService.findById(maBenhVien).ifPresent(bv -> {
-                model.addAttribute("benhVienChuQuan", bv.getTenBenhVien());
-            });
-        } else {
-            model.addAttribute("danhSachPhongKham", phongKhamService.findAll());
+    public String index(@RequestParam(required = false) Integer maBenhVien, Model model, RedirectAttributes redirectAttributes) {
+        if (maBenhVien == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Vui lòng chọn một Cơ sở y tế để quản lý phòng khám!");
+            return "redirect:/benhvien/index";
         }
+        model.addAttribute("danhSachPhongKham", phongKhamService.layDanhSachTheoBenhVien(maBenhVien));
+        benhVienService.findById(maBenhVien).ifPresent(bv -> {
+            model.addAttribute("benhVienChuQuan", bv.getTenBenhVien());
+        });
         return "phongkham/index"; 
     }
     
     // =================================================================
-    // 2. THÊM MỚI PHÒNG KHÁM CÓ GẮN BÁC SĨ & CHUYÊN KHOA
+    // 2. THÊM MỚI PHÒNG KHÁM
     // =================================================================
     @GetMapping("/create")
     public String create(@RequestParam(required = false) Integer maBenhVien, Model model) {
         PhongKham pk = new PhongKham();
-        pk.setTrangThai(true); // Trạng thái mặc định luôn là True
-        
-        // Nếu bấm từ quản lý bệnh viện cụ thể, set sẵn bệnh viện đó
+        pk.setTrangThai(true);
         if (maBenhVien != null) {
             BenhVien bv = new BenhVien();
             bv.setMaBenhVien(maBenhVien);
             pk.setBenhVien(bv);
-
-            System.out.println("Đang tạo phòng cho Bệnh viện ID: " + maBenhVien);
         }
-        
         model.addAttribute("phongKham", pk);
-        
-        // Truyền 3 danh sách xuống để View xử lý Select Box và Javascript lọc dữ liệu
         model.addAttribute("danhSachBenhVien", benhVienService.findAll());
         model.addAttribute("danhSachChuyenKhoa", danhMucChuyenKhoaService.findAll());
-        model.addAttribute("danhSachBacSi", bacSiService.findAll());
         
+        List<com.khoinguyen.mediqueue.entity.BacSi> bacSiRanh = bacSiService.findAll().stream()
+                .filter(bs -> bs.getPhongKham() == null)
+                .collect(Collectors.toList());
+        model.addAttribute("danhSachBacSi", bacSiRanh);
         return "phongkham/create"; 
     }
 
@@ -88,36 +86,50 @@ public class PhongKhamController {
                                 @RequestParam(name = "maBacSi", required = false) Integer maBacSi, 
                                 RedirectAttributes redirectAttributes) {
         try {
-            // 1. Lưu Phòng khám trước để Database sinh ra mã ID (maPhongKham)
             PhongKham pkDaLuu = phongKhamService.save(phongKham);
-            
-            // 2. Nếu quản lý có chọn Bác sĩ phụ trách, tiến hành cập nhật Bác sĩ đó
             if (maBacSi != null) {
                 bacSiService.findById(maBacSi).ifPresent(bs -> {
-                    bs.setPhongKham(pkDaLuu); // Gắn phòng vừa tạo cho bác sĩ
-                    bacSiService.update(bs);  // Lưu bác sĩ xuống Database
+                    bs.setPhongKham(pkDaLuu); 
+                    bacSiService.update(bs);  
                 });
             }
-
             redirectAttributes.addFlashAttribute("successMessage", "Thêm mới Phòng khám thành công!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Đã xảy ra lỗi khi lưu: " + e.getMessage());
         }
-        return "redirect:/phongkham/index"; 
+        if (phongKham.getBenhVien() != null && phongKham.getBenhVien().getMaBenhVien() != null) {
+            return "redirect:/phongkham/index?maBenhVien=" + phongKham.getBenhVien().getMaBenhVien();
+        }
+        return "redirect:/phongkham/index";
     }
 
     // =================================================================
-    // 3. CẬP NHẬT THÔNG TIN PHÒNG KHÁM
+    // 3. CẬP NHẬT THÔNG TIN PHÒNG KHÁM (BẢN CHUẨN XÁC)
     // =================================================================
     @GetMapping("/edit/{id}")
     public String edit(@PathVariable Integer id, Model model, RedirectAttributes redirectAttributes) {
         Optional<PhongKham> opt = phongKhamService.findById(id);
         if (opt.isPresent()) {
-            model.addAttribute("phongKham", opt.get());
-            // Cần truyền lại đủ 3 danh sách để Load dropdown
+            PhongKham pk = opt.get();
+            model.addAttribute("phongKham", pk);
+            
             model.addAttribute("danhSachBenhVien", benhVienService.findAll());
             model.addAttribute("danhSachChuyenKhoa", danhMucChuyenKhoaService.findAll());
-            model.addAttribute("danhSachBacSi", bacSiService.findAll());
+            
+            // Tìm bác sĩ hiện tại đang giữ phòng này
+            com.khoinguyen.mediqueue.entity.BacSi bacSiHienTai = bacSiService.findAll().stream()
+                    .filter(bs -> bs.getPhongKham() != null && bs.getPhongKham().getMaPhongKham().equals(pk.getMaPhongKham()))
+                    .findFirst().orElse(null);
+            
+            model.addAttribute("bacSiHienTai", bacSiHienTai);
+            
+            // Lọc danh sách bác sĩ rảnh + bác sĩ đang giữ phòng
+            List<com.khoinguyen.mediqueue.entity.BacSi> bacSiHopLe = bacSiService.findAll().stream()
+                    .filter(bs -> bs.getPhongKham() == null || 
+                                 (bacSiHienTai != null && bs.getMaBacSi().equals(bacSiHienTai.getMaBacSi())))
+                    .collect(Collectors.toList());
+                    
+            model.addAttribute("danhSachBacSi", bacSiHopLe);
             return "phongkham/edit"; 
         } else {
             redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy hồ sơ Phòng khám!");
@@ -132,7 +144,17 @@ public class PhongKhamController {
         try {
             PhongKham pkDaLuu = phongKhamService.save(phongKham);
             
-            // Nếu có chọn Bác sĩ phụ trách thì set cho Bác sĩ
+            // Gỡ phòng của bác sĩ cũ nếu quản lý đổi người
+            for (com.khoinguyen.mediqueue.entity.BacSi bs : bacSiService.findAll()) {
+                if (bs.getPhongKham() != null && bs.getPhongKham().getMaPhongKham().equals(pkDaLuu.getMaPhongKham())) {
+                    if (maBacSi == null || !bs.getMaBacSi().equals(maBacSi)) {
+                        bs.setPhongKham(null);
+                        bacSiService.update(bs);
+                    }
+                }
+            }
+            
+            // Cập nhật người mới
             if (maBacSi != null) {
                 bacSiService.findById(maBacSi).ifPresent(bs -> {
                     bs.setPhongKham(pkDaLuu);
@@ -143,6 +165,9 @@ public class PhongKhamController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Đã xảy ra lỗi khi cập nhật: " + e.getMessage());
         }
+        if (phongKham.getBenhVien() != null && phongKham.getBenhVien().getMaBenhVien() != null) {
+            return "redirect:/phongkham/index?maBenhVien=" + phongKham.getBenhVien().getMaBenhVien();
+        }
         return "redirect:/phongkham/index"; 
     }
 
@@ -150,18 +175,28 @@ public class PhongKhamController {
     // 4. XÓA PHÒNG KHÁM
     // =================================================================
     @PostMapping("/delete/{id}")
-    public String deletePhongKham(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
+    public String deletePhongKham(@PathVariable Integer id, RedirectAttributes redirectAttributes, HttpServletRequest request) {
         try {
-            phongKhamService.deleteById(id);
-            redirectAttributes.addFlashAttribute("successMessage", "Đã xóa Phòng khám khỏi hệ thống!");
+            Optional<PhongKham> opt = phongKhamService.findById(id);
+            if (opt.isPresent()) {
+                PhongKham pk = opt.get();
+                if (pk.getBacSi() != null) {
+                    com.khoinguyen.mediqueue.entity.BacSi bs = pk.getBacSi();
+                    bs.setPhongKham(null);
+                    bacSiService.update(bs);
+                }
+                phongKhamService.deleteById(id);
+                redirectAttributes.addFlashAttribute("successMessage", "Đã xóa Phòng khám thành công!");
+            }
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Không thể xóa do ràng buộc dữ liệu hệ thống!");
+            redirectAttributes.addFlashAttribute("errorMessage", "Không thể xóa: " + e.getMessage());
         }
-        return "redirect:/phongkham/index";
+        String referer = request.getHeader("Referer");
+        return "redirect:" + (referer != null ? referer : "/phongkham/index");
     }
 
     // =================================================================
-    // 5. THAY ĐỔI TRẠNG THÁI (BẬT / TẮT NHANH)
+    // 5. THAY ĐỔI TRẠNG THÁI
     // =================================================================
     @PostMapping("/toggle-status/{id}")
     public String toggleStatus(@PathVariable Integer id, RedirectAttributes redirectAttributes, HttpServletRequest request) {
@@ -169,18 +204,14 @@ public class PhongKhamController {
             Optional<PhongKham> opt = phongKhamService.findById(id);
             if (opt.isPresent()) {
                 PhongKham pk = opt.get();
-                // Đảo ngược trạng thái hiện tại (Đang bật -> Tắt, Đang tắt -> Bật)
                 pk.setTrangThai(!pk.getTrangThai()); 
                 phongKhamService.save(pk);
-                
                 String tb = pk.getTrangThai() ? "Đã MỞ lại phòng khám!" : "Đã TẠM ĐÓNG phòng khám!";
                 redirectAttributes.addFlashAttribute("successMessage", tb);
             }
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Đã xảy ra lỗi: " + e.getMessage());
         }
-        
-        // Lấy lại đường dẫn URL trước khi bấm nút (có thể chứa đuôi ?maBenhVien=...)
         String referer = request.getHeader("Referer");
         return "redirect:" + (referer != null ? referer : "/phongkham/index");
     }

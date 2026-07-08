@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{_layout}">
+    <head>
+        <title>Cập nhật Phòng Khám</title>
+        <link rel="stylesheet" th:href="@{/css/Create.css}" />
+    </head>
+    <body>
+
+        <div layout:fragment="content">
+            <div class="container-fluid fade-in-up py-5 px-4">
+
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h4 class="text-subtitle">QUẢN LÝ PHÒNG KHÁM</h4>
+                        <h2 class="page-title">CẬP NHẬT THÔNG TIN PHÒNG KHÁM</h2>
+                    </div>
+                    <a class="btn btn-back-luxury" th:href="@{/phongkham/index(maBenhVien=${phongKham.benhVien.maBenhVien})}">
+                        <i class="bi bi-arrow-left me-2"></i> Quay lại
+                    </a>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-8 mx-auto">
+                        <div class="glass-form-container">
+                            <form th:action="@{/phongkham/edit}" th:object="${phongKham}" method="post" id="editForm">
+                                <h5 class="section-header"><i class="bi bi-info-circle-fill me-2"></i>Thông tin Phòng khám</h5>
+
+                                <input type="hidden" th:field="*{maPhongKham}" />
+                                <input type="hidden" th:field="*{trangThai}" />
+
+                                <div class="row g-4">
+                                    
+                                    <div class="col-md-6">
+                                        <label class="form-label-luxury">Cơ sở trực thuộc (Bệnh viện) <span class="text-danger">*</span></label>
+                                        <div class="input-group luxury-input-group">
+                                            <span class="input-group-text"><i class="bi bi-hospital"></i></span>
+                                            
+                                            <th:block th:if="${phongKham.benhVien != null and phongKham.benhVien.maBenhVien != null}">
+                                                <input type="hidden" th:field="*{benhVien.maBenhVien}" />
+                                                <select id="benhVienSelect" class="form-control" style="background-color: rgba(255, 255, 255, 0.05); color: #aaa; pointer-events: none;">
+                                                    <option th:each="bv : ${danhSachBenhVien}"
+                                                            th:value="${bv.maBenhVien}"
+                                                            th:text="${bv.tenBenhVien}"
+                                                            th:selected="${bv.maBenhVien == phongKham.benhVien.maBenhVien}">
+                                                    </option>
+                                                </select>
+                                            </th:block>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label class="form-label-luxury">Chuyên khoa <span class="text-danger">*</span></label>
+                                        <div class="input-group luxury-input-group">
+                                            <span class="input-group-text"><i class="bi bi-heart-pulse"></i></span>
+                                            <select th:field="*{chuyenKhoa.maDanhMuc}" id="chuyenKhoaSelect" class="form-control" style="background-color: rgba(0, 0, 0, 0.1); color: var(--white);" required onchange="filterDoctors(false)">
+                                                <option value="" style="background-color: #222; color: #fff;">-- Chọn chuyên khoa --</option>
+                                                <option th:each="ck : ${danhSachChuyenKhoa}"
+                                                        th:value="${ck.maDanhMuc}"
+                                                        th:text="${ck.tenDanhMuc}"
+                                                        style="background-color: #222; color: #fff;">
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <label class="form-label-luxury">Tên phòng khám <span class="text-danger">*</span></label>
+                                        <div class="input-group luxury-input-group">
+                                            <span class="input-group-text"><i class="bi bi-door-open-fill"></i></span>
+                                            <input type="text" th:field="*{tenPhongKham}" class="form-control" required placeholder="VD: Phòng Khám Nội Tiêu Hóa, Phòng Siêu Âm..." />
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <label class="form-label-luxury">Số phòng / Khu vực</label>
+                                        <div class="input-group luxury-input-group">
+                                            <span class="input-group-text"><i class="bi bi-hash"></i></span>
+                                            <input type="text" th:field="*{soPhong}" class="form-control" placeholder="VD: P.101, Tầng 2..." />
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <label class="form-label-luxury">Phân công Bác sĩ (Tự động lọc theo Bệnh viện & Chuyên khoa)</label>
+                                        <div class="input-group luxury-input-group">
+                                            <span class="input-group-text"><i class="bi bi-person-heart"></i></span>
+                                            <select name="maBacSi" id="bacSiSelect" class="form-control" style="background-color: rgba(0, 0, 0, 0.1); color: var(--white);">
+                                                <option value="" style="background-color: #222; color: #fff;">-- Không phân công bác sĩ --</option>
+                                                
+                                                <option th:each="bs : ${danhSachBacSi}"
+                                                        class="doctor-option"
+                                                        th:value="${bs.maBacSi}"
+                                                        th:text="${bs.hoTen}"
+                                                        th:data-benhvien="${bs.benhVien != null ? bs.benhVien.maBenhVien : ''}"
+                                                        th:data-chuyenkhoa="${bs.chuyenKhoa != null ? bs.chuyenKhoa.maDanhMuc : ''}"
+                                                        th:selected="${phongKham.bacSi != null and phongKham.bacSi.maBacSi == bs.maBacSi}"
+                                                        style="background-color: #222; color: #fff; display: none;"> 
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <div class="form-actions mt-5 pt-4 d-flex justify-content-end gap-3">
+                                    <a class="btn btn-back-luxury" th:href="@{/phongkham/index(maBenhVien=${phongKham.benhVien.maBenhVien})}">
+                                        <i class="bi bi-arrow-left me-2"></i>Hủy bỏ
+                                    </a>
+                                    <button type="submit" class="btn btn-create-luxury">
+                                        <i class="bi bi-save me-2"></i> Lưu thay đổi
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <th:block layout:fragment="scripts">
+            <input type="hidden" id="errorMessage" th:value="${errorMessage}" />
+            
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+            <script th:src="@{/js/Error.js}"></script>
+
+            <script>
+                // Thêm tham số isInitialLoad để biết đây là lần load trang đầu tiên hay là lúc người dùng bấm chọn
+                function filterDoctors(isInitialLoad) {
+                    const selectedBenhVien = document.getElementById('benhVienSelect').value;
+                    const selectedChuyenKhoa = document.getElementById('chuyenKhoaSelect').value;
+                    const bacSiSelect = document.getElementById('bacSiSelect');
+                    const doctorOptions = document.querySelectorAll('.doctor-option');
+                    
+                    // LƯU LẠI bác sĩ đang được chọn trước khi lọc
+                    const currentSelectedDoctor = bacSiSelect.value;
+                    
+                    let hasMatchingDoctor = false;
+
+                    doctorOptions.forEach(opt => {
+                        const bsBenhVien = opt.getAttribute('data-benhvien');
+                        const bsChuyenKhoa = opt.getAttribute('data-chuyenkhoa');
+                        
+                        if (selectedBenhVien && selectedChuyenKhoa && 
+                            bsBenhVien === selectedBenhVien && bsChuyenKhoa === selectedChuyenKhoa) {
+                            opt.style.display = 'block'; 
+                            hasMatchingDoctor = true;
+                        } else {
+                            opt.style.display = 'none'; 
+                        }
+                    });
+
+                    const defaultOption = bacSiSelect.querySelector('option[value=""]');
+                    if (selectedBenhVien && selectedChuyenKhoa) {
+                        defaultOption.text = hasMatchingDoctor ? "-- Chọn bác sĩ --" : "-- Không có bác sĩ nào thỏa điều kiện --";
+                    } else {
+                        defaultOption.text = "-- Vui lòng chọn Bệnh viện và Chuyên khoa trước --";
+                    }
+
+                    // Nếu người dùng TỰ ĐỔI chuyên khoa -> Xóa chọn bác sĩ hiện tại
+                    // Nếu hệ thống TỰ LOAD lần đầu -> Giữ nguyên bác sĩ đang chọn
+                    if (!isInitialLoad) {
+                        bacSiSelect.value = "";
+                    } else {
+                        bacSiSelect.value = currentSelectedDoctor;
+                    }
+                }
+
+                document.addEventListener("DOMContentLoaded", function() {
+                    // Gọi hàm với tham số true báo hiệu đây là lần tải trang đầu tiên
+                    filterDoctors(true);
+                });
+            </script>
+        </th:block>
+
+    </body>
+</html>

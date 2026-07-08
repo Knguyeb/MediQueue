@@ -56,7 +56,7 @@ public class SeedData implements CommandLineRunner {
             // =====================================================================
             // 1. TẠO 10 BỆNH VIỆN
             // =====================================================================
-           BenhVien bv1 = new BenhVien();
+            BenhVien bv1 = new BenhVien();
             bv1.setTenBenhVien("Bệnh viện Chợ Rẫy");
             bv1.setDiaChi("201B Nguyễn Chí Thanh, Quận 5, TP.HCM");
             bv1.setSoDienThoai("028 3855 4137");
@@ -195,6 +195,7 @@ public class SeedData implements CommandLineRunner {
                 pk1.setSoPhong("P.101");
                 pk1.setTrangThai(true);
                 pk1.setBenhVien(bv);
+                pk1.setChuyenKhoa(randomCK1); // Bổ sung gắn chuyên khoa cho phòng khám luôn cho chuẩn
                 pk1 = phongKhamService.save(pk1); // Lưu lấy ID
 
                 PhongKham pk2 = new PhongKham();
@@ -202,6 +203,7 @@ public class SeedData implements CommandLineRunner {
                 pk2.setSoPhong("P.102");
                 pk2.setTrangThai(true);
                 pk2.setBenhVien(bv);
+                pk2.setChuyenKhoa(randomCK2);
                 pk2 = phongKhamService.save(pk2); // Lưu lấy ID
 
                 // Cho vào mảng để xíu nữa duyệt nhét Bác sĩ vào
@@ -223,6 +225,20 @@ public class SeedData implements CommandLineRunner {
                     
                     bacSiService.themMoiBacSi(bs);
                 }
+
+                // --- D. TẠO THÊM 1 BÁC SĨ DƯ (KHÔNG CÓ PHÒNG) ĐỂ TEST ĐỔI BÁC SĨ ---
+                BacSi bsDu = new BacSi();
+                bsDu.setHoTen(hoList[random.nextInt(10)] + " " + tenDemList[random.nextInt(10)] + " " + tenList[random.nextInt(10)]);
+                bsDu.setSoDienThoai("09" + (10000000 + random.nextInt(90000000)));
+                bsDu.setEmail("bacsidu." + bv.getMaBenhVien() + "@mediqueue.vn");
+                bsDu.setGioiTinh(random.nextBoolean());
+                bsDu.setBenhVien(bv);
+                
+                // Set chuyên khoa trùng với phòng 1 để bạn dễ test chức năng lọc bác sĩ theo chuyên khoa
+                bsDu.setChuyenKhoa(randomCK1); 
+                
+                // KHÔNG set phòng khám (để null)
+                bacSiService.themMoiBacSi(bsDu);
             }
 
             // =====================================================================
@@ -241,7 +257,7 @@ public class SeedData implements CommandLineRunner {
             }
 
             System.out.println("============== HOÀN TẤT SEED DATA MỚI ==============");
-            System.out.println("Đã thêm: 10 Bệnh viện, 10 Chuyên khoa, 10 Quản lý, 20 Phòng khám, 20 Bác sĩ, 3 Bệnh nhân");
+            System.out.println("Đã thêm: 10 Bệnh viện, 10 Chuyên khoa, 10 Quản lý, 20 Phòng khám, 30 Bác sĩ, 3 Bệnh nhân");
         }
     }
 }
