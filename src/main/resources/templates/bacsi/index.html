@@ -92,32 +92,60 @@
                             </div>
                         </td>
 
-                        <td class="text-center align-middle">
-                            <th:block th:if="${item.trangThai == null or item.trangThai}">
-                                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-50 rounded-pill px-3 py-2" style="font-size: 0.85rem;">
-                                    <i class="bi bi-check-circle-fill me-1"></i> Hoạt động
-                                </span>
+                       <td class="text-center align-middle">
+                            <th:block th:if="${item.taiKhoan != null}">
+                                <th:block th:if="${item.taiKhoan.trangThai == null or item.taiKhoan.trangThai}">
+                                    <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-50 rounded-pill px-3 py-2" style="font-size: 0.85rem;">
+                                        <i class="bi bi-check-circle-fill me-1"></i> Hoạt động
+                                    </span>
+                                </th:block>
+                                <th:block th:unless="${item.taiKhoan.trangThai == null or item.taiKhoan.trangThai}">
+                                    <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-50 rounded-pill px-3 py-2 shadow-sm" style="font-size: 0.85rem;">
+                                        <i class="bi bi-lock-fill me-1"></i> Đã khóa
+                                    </span>
+                                </th:block>
                             </th:block>
-                            <th:block th:unless="${item.trangThai == null or item.trangThai}">
-                                <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-50 rounded-pill px-3 py-2 shadow-sm" style="font-size: 0.85rem;">
-                                    <i class="bi bi-lock-fill me-1"></i> Đã khóa
+                            <th:block th:if="${item.taiKhoan == null}">
+                                <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-50 rounded-pill px-3 py-2" style="font-size: 0.85rem;">
+                                    Chưa cấp TK
                                 </span>
                             </th:block>
                         </td>
-                        
+
                         <td>
                             <div class="d-flex justify-content-center gap-2">
+                                <th:block th:if="${item.taiKhoan != null}">
+                                    <th:block th:if="${item.taiKhoan.trangThai == null or item.taiKhoan.trangThai}">
+                                        <button type="button" class="btn-icon-medical btn-danger-glow" th:onclick="'toggleAccountStatus(' + ${item.taiKhoan.maTaiKhoan} + ')'" title="Khóa tài khoản">
+                                            <i class="bi bi-power"></i>
+                                        </button>
+                                    </th:block>
+                                    <th:block th:unless="${item.taiKhoan.trangThai == null or item.taiKhoan.trangThai}">
+                                        <button type="button" class="btn-icon-medical btn-cyan-glow" th:onclick="'toggleAccountStatus(' + ${item.taiKhoan.maTaiKhoan} + ')'" title="Mở khóa tài khoản">
+                                            <i class="bi bi-power"></i>
+                                        </button>
+                                    </th:block>
+
+                                    <button type="button" class="btn-icon-medical btn-purple-glow" th:onclick="'confirmResetPassword(' + ${item.taiKhoan.maTaiKhoan} + ')'" title="Reset mật khẩu về 123">
+                                        <i class="bi bi-key-fill"></i>
+                                    </button>
+                                </th:block>
+
                                 <a th:href="@{/bacsi/edit/{id}(id=${item.maBacSi})}" class="btn-icon-medical btn-warning-glow" title="Sửa thông tin">
                                     <i class="bi bi-pencil-square"></i>
                                 </a>
 
-                                <button class="btn-icon-medical btn-danger-glow" th:onclick="'confirmDelete(' + ${item.maBacSi} + ')'" title="Xóa bác sĩ">
+                                <button type="button" class="btn-icon-medical btn-danger-glow" th:onclick="'confirmDelete(' + ${item.maBacSi} + ')'" title="Xóa bác sĩ">
                                     <i class="bi bi-trash-fill"></i>
                                 </button>
                             </div>
 
-                            <form th:id="'deleteForm-' + ${item.maBacSi}" method="post" th:action="@{/bacsi/delete/{id}(id=${item.maBacSi})}" style="display:none;">
-                            </form>
+                            <form th:id="'deleteForm-' + ${item.maBacSi}" method="post" th:action="@{/bacsi/delete/{id}(id=${item.maBacSi})}" style="display:none;"></form>
+                            
+                            <th:block th:if="${item.taiKhoan != null}">
+                                <form th:id="'toggleForm-' + ${item.taiKhoan.maTaiKhoan}" method="post" th:action="@{/taikhoan/{id}/toggle-status(id=${item.taiKhoan.maTaiKhoan})}" style="display:none;"></form>
+                                <form th:id="'resetForm-' + ${item.taiKhoan.maTaiKhoan}" method="post" th:action="@{/taikhoan/{id}/reset-password(id=${item.taiKhoan.maTaiKhoan})}" style="display:none;"></form>
+                            </th:block>
                         </td>
                     </tr>
                 </tbody>
@@ -150,6 +178,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script th:src="@{/js/Delete.js}"></script>
     <script th:src="@{/js/Success.js}"></script>
+    <script th:src="@{/js/Error.js}"></script>
     <script th:src="@{/js/PhanTrang.js}"></script>
     <script th:src="@{/js/Search.js}"></script>
 
@@ -174,24 +203,14 @@
             });
         });
 
-        // Script hỏi xác nhận trước khi Reset Mật khẩu
-        function confirmResetPassword(id) {
-            Swal.fire({
-                title: 'Khôi phục mật khẩu?',
-                text: "Mật khẩu của bác sĩ này sẽ được đặt lại về mặc định là '123'.",
-                icon: 'warning',
-                showCancelButton: true,
-                background: '#1a1d24',
-                color: '#fff',
-                confirmButtonColor: '#06b6d4', /* Màu xanh ngọc */
-                cancelButtonColor: '#ef4444',
-                confirmButtonText: '<i class="bi bi-check-lg me-1"></i> Đồng ý',
-                cancelButtonText: 'Hủy bỏ'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    document.getElementById('resetForm-' + id).submit();
-                }
-            });
+        // Gọi form ẩn để Khóa/Mở khóa
+        function toggleAccountStatus(accountId) {
+            document.getElementById('toggleForm-' + accountId).submit();
+        }
+
+        // Gọi form ẩn để Reset mật khẩu
+        function confirmResetPassword(accountId) {
+            document.getElementById('resetForm-' + accountId).submit();
         }
     </script>
 </th:block>

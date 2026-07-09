@@ -8,8 +8,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.khoinguyen.mediqueue.entity.TaiKhoan;
 import com.khoinguyen.mediqueue.helper.PasswordHelper;
@@ -34,41 +36,48 @@ public class TaiKhoanController {
         return "taikhoan/index"; 
     }
 
-    // =================================================================
-    // 2. API RESTFUL (Dùng cho Popup / Nút bấm bằng AJAX)
+   // =================================================================
+    // 2. XỬ LÝ NÚT BẤM (DÙNG REDIRECT ATTRIBUTES)
     // =================================================================
 
-    // Khóa / Mở khóa tài khoản (Toggle Status)
-    @PutMapping("/api/taikhoan/{id}/toggle-status")
-    @ResponseBody
-    public ResponseEntity<?> toggleStatus(@PathVariable Integer id) {
+    // Khóa / Mở khóa tài khoản
+    @PostMapping("/taikhoan/{id}/toggle-status")
+    public String toggleStatus(@PathVariable Integer id, RedirectAttributes redirectAttributes, jakarta.servlet.http.HttpServletRequest request) {
         Optional<TaiKhoan> opt = taiKhoanService.findById(id);
-        if (opt.isEmpty()) {
-            return ResponseEntity.notFound().build();
+        if (opt.isPresent()) {
+            TaiKhoan taiKhoan = opt.get();
+            // Đảo ngược trạng thái
+            boolean newStatus = !taiKhoan.getTrangThai();
+            taiKhoan.setTrangThai(newStatus);
+            taiKhoanService.save(taiKhoan);
+            
+            // Tạo câu thông báo linh hoạt theo trạng thái
+            String hanhDong = newStatus ? "Mở khóa" : "Khóa";
+            redirectAttributes.addFlashAttribute("successMessage", "Đã " + hanhDong + " tài khoản thành công!");
+        } else {
+            redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy tài khoản để xử lý!");
         }
         
-        TaiKhoan taiKhoan = opt.get();
-        // Đảo ngược trạng thái (true thành false, false thành true)
-        taiKhoan.setTrangThai(!taiKhoan.getTrangThai());
-        taiKhoanService.save(taiKhoan);
-        
-        return ResponseEntity.ok(taiKhoan.getTrangThai());
+        // Quay lại trang trước đó (Trang tổng hoặc Trang theo bệnh viện)
+        String referer = request.getHeader("Referer");
+        return "redirect:" + (referer != null ? referer : "/bacsi/index");
     }
 
     // Reset mật khẩu về mặc định "123"
-    @PutMapping("/api/taikhoan/{id}/reset-password")
-    @ResponseBody
-    public ResponseEntity<?> resetPassword(@PathVariable Integer id) {
+    @PostMapping("/taikhoan/{id}/reset-password")
+    public String resetPassword(@PathVariable Integer id, RedirectAttributes redirectAttributes, jakarta.servlet.http.HttpServletRequest request) {
         Optional<TaiKhoan> opt = taiKhoanService.findById(id);
-        if (opt.isEmpty()) {
-            return ResponseEntity.notFound().build();
+        if (opt.isPresent()) {
+            TaiKhoan taiKhoan = opt.get();
+            taiKhoan.setMatKhau(PasswordHelper.hashPassword("123"));
+            taiKhoanService.save(taiKhoan);
+            
+            redirectAttributes.addFlashAttribute("successMessage", "Đã đặt lại mật khẩu thành '123' thành công!");
+        } else {
+            redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy tài khoản để xử lý!");
         }
         
-        TaiKhoan taiKhoan = opt.get();
-        // Hash lại pass mặc định
-        taiKhoan.setMatKhau(PasswordHelper.hashPassword("123"));
-        taiKhoanService.save(taiKhoan);
-        
-        return ResponseEntity.ok("Đã đặt lại mật khẩu thành '123'");
+        String referer = request.getHeader("Referer");
+        return "redirect:" + (referer != null ? referer : "/bacsi/index");
     }
 }
