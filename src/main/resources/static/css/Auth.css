@@ -1,0 +1,304 @@
+/* ================== FONT + RESET ================== */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+    color: #e4e4e7;
+}
+
+/* ================== TOÀN TRANG ================== */
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: #18181b;
+}
+
+/* ================== KHUNG NGOÀI (CONTAINER) ================== */
+.container {
+    position: relative;
+    width: 750px;
+    height: 620px;
+    border: 2px solid #8b5cf6;
+    box-shadow: 0 0 25px rgba(139, 92, 246, 0.4);
+    overflow: hidden;
+    background: #27272a;
+    border-radius: 20px;
+}
+
+.container.login-container {
+    height: 480px;
+}
+
+/* ================== FORM BOX ================== */
+.container .form-box {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    padding: 0 40px;
+    z-index: 1;
+}
+
+.form-box h1, .form-box h2 {
+    font-size: 30px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #ffffff;
+    font-weight: 700;
+}
+
+/* ==================================================== */
+/* 1. ĐỊNH DẠNG Ô NHẬP TEXT BÌNH THƯỜNG (Họ tên, SĐT)   */
+/* ==================================================== */
+.form-box .input-box {
+    position: relative;
+    width: 100%;
+    height: 50px;
+    margin-top: 20px; /* Khoảng cách đều nhau cho tất cả các ô */
+}
+
+.input-box input {
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 15px;
+    font-weight: 500;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+    padding-right: 30px;
+    transition: .3s;
+    color: #fff;
+}
+
+.input-box input:focus,
+.input-box input:valid {
+    border-bottom: 2px solid #8b5cf6;
+}
+
+.input-box label {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    font-size: 15px;
+    color: #a1a1aa;
+    transition: .3s;
+    pointer-events: none;
+}
+
+.input-box input:focus ~ label,
+.input-box input:valid ~ label {
+    top: -5px;
+    font-size: 12px;
+    color: #8b5cf6;
+}
+
+.input-box box-icon {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    font-size: 18px;
+    transform: translateY(-50%);
+    cursor: pointer;
+    fill: #a1a1aa;
+    transition: .3s;
+}
+
+.input-box input:focus ~ box-icon,
+.input-box input:valid ~ box-icon {
+    fill: #8b5cf6;
+}
+
+/* ==================================================== */
+/* 2. ĐỊNH DẠNG Ô GIỚI TÍNH & NGÀY SINH (STATIC BOX)    */
+/* ==================================================== */
+.static-box {
+    position: relative;
+    width: 100%;
+    height: 50px;
+    margin-top: 20px; /* Giống hệt khoảng cách input-box */
+    border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+    transition: .3s;
+}
+
+.static-box:focus-within {
+    border-bottom: 2px solid #8b5cf6; /* Đổi màu viền khi click vào */
+}
+
+/* Ép nhãn cố định nổi lên trên y hệt như input-box khi được focus */
+.static-box .static-label {
+    position: absolute;
+    top: -5px;
+    left: 0;
+    transform: translateY(-50%);
+    font-size: 12px;
+    color: #8b5cf6;
+    pointer-events: none;
+}
+
+/* Căn giữa dọc các nút Radio */
+.static-box .radio-content {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center; /* Đảm bảo nút check nằm chính giữa 50px */
+    gap: 30px; 
+    padding-right: 30px;
+}
+
+.static-box .radio-content label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    color: #fff;
+    cursor: pointer;
+}
+
+.static-box .radio-content input[type="radio"] {
+    width: 16px;
+    height: 16px;
+    accent-color: #8b5cf6; /* Nút check radio màu tím */
+    cursor: pointer;
+    margin: 0;
+}
+
+/* Định dạng riêng cho ô chọn ngày (Mất nền trắng) */
+.static-box input[type="date"] {
+    width: 100%;
+    height: 100%;
+    background: transparent !important;
+    border: none;
+    outline: none;
+    font-size: 15px;
+    color: #fff;
+    font-family: 'Poppins', sans-serif;
+    color-scheme: dark; /* BẮT BUỘC: Đổi icon lịch sang theme tối */
+    padding-right: 5px;
+}
+
+/* Icon của form static */
+.static-box box-icon {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    font-size: 18px;
+    transform: translateY(-50%);
+    fill: #a1a1aa;
+    transition: .3s;
+}
+
+.static-box:focus-within box-icon {
+    fill: #8b5cf6;
+}
+
+/* ================== NÚT BẤM VÀ LINK DƯỚI ================== */
+.btn {
+    position: relative;
+    width: 100%;
+    height: 45px;
+    margin-top: 30px;
+    background: transparent;
+    border-radius: 40px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    border: 2px solid #8b5cf6;
+    overflow: hidden;
+    z-index: 1;
+    color: #fff;
+    transition: .3s;
+}
+
+.btn::before {
+    content: "";
+    position: absolute;
+    height: 300%;
+    width: 100%;
+    background: linear-gradient(#27272a, #8b5cf6, #27272a, #8b5cf6);
+    top: -100%;
+    left: 0;
+    z-index: -1;
+    transition: .5s;
+}
+
+.btn:hover::before {
+    top: 0;
+}
+
+.regi-link {
+    font-size: 14px;
+    text-align: center;
+    margin: 20px 0 10px;
+}
+.regi-link a {
+    text-decoration: none;
+    color: #8b5cf6;
+    font-weight: 600;
+    transition: .3s;
+}
+.regi-link a:hover { 
+    color: #7c3aed; 
+    text-decoration: underline; 
+}
+
+/* ================== PHẦN CHÀO MỪNG ================== */
+.info-content {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
+    width: 50%;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    text-align: right;
+    padding: 0 40px 60px 100px;
+    z-index: 1;
+}
+
+.info-content h2 {
+    text-transform: uppercase;
+    font-size: 32px;
+    margin-bottom: 10px;
+    color: #ffffff;
+    font-weight: 700;
+}
+.info-content p {
+    font-size: 15px;
+    line-height: 1.5;
+    color: #a1a1aa;
+}
+
+/* ================== NỀN TRANG TRÍ ================== */
+.container .curved-shape {
+    position: absolute;
+    right: 0;
+    top: -5px;
+    height: 600px;
+    width: 850px;
+    background: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%);
+    transform: rotate(10deg) skewY(40deg);
+    transform-origin: bottom right;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.2);
+}
+.container .curved-shape2 {
+    position: absolute;
+    left: 250px;
+    top: 100%;
+    height: 700px;
+    width: 850px;
+    background: #18181b;
+    border-top: 3px solid #8b5cf6;
+}

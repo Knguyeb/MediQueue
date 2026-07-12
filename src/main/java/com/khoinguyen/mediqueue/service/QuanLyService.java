@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.khoinguyen.mediqueue.entity.BacSi;
 import com.khoinguyen.mediqueue.entity.QuanLy;
 import com.khoinguyen.mediqueue.entity.TaiKhoan;
 import com.khoinguyen.mediqueue.entity.VaiTro;
@@ -49,5 +50,9 @@ public class QuanLyService {
 
     public void deleteById(Integer id) {
         quanLyRepository.deleteById(id);
+    }
+
+    public Optional<QuanLy> findBySoDienThoai(String soDienThoai) {
+        return quanLyRepository.findBySoDienThoai(soDienThoai);
     }
 }

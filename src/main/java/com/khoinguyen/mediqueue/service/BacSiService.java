@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.khoinguyen.mediqueue.entity.BacSi;
+import com.khoinguyen.mediqueue.entity.BenhNhan;
 import com.khoinguyen.mediqueue.entity.TaiKhoan;
 import com.khoinguyen.mediqueue.entity.VaiTro;
 import com.khoinguyen.mediqueue.repository.BacSiRepository;
@@ -51,5 +52,9 @@ public class BacSiService {
 
     public void deleteById(Integer id) {
         bacSiRepository.deleteById(id);
+    }
+
+    public Optional<BacSi> findBySoDienThoai(String soDienThoai) {
+        return bacSiRepository.findBySoDienThoai(soDienThoai);
     }
 }

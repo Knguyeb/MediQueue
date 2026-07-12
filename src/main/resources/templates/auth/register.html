@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Đăng ký - MediQueue</title>
+    <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
+<link rel="stylesheet" th:href="@{/css/Auth.css(v=1.1)}" />
+</head>
+<body>
+
+<div class="container">
+    <div class="curved-shape"></div>
+    <div class="curved-shape2"></div>
+
+    <div class="form-box">
+        <h1>Đăng ký</h1>
+        <form th:action="@{/register}" method="post">
+            
+            <div class="input-box">
+                <input type="text" name="hoTen" required />
+                <label>Họ và tên</label>
+                <box-icon name="user" color="gray"></box-icon>
+            </div>
+
+            <div class="input-box">
+                <input type="text" name="soDienThoai" required pattern="^0[0-9]{9}$" title="Vui lòng nhập đúng số điện thoại (10 số, bắt đầu bằng 0)" />
+                <label>Số điện thoại</label>
+                <box-icon name="phone" color="gray"></box-icon>
+            </div>
+
+            <div class="input-box">
+                <input type="email" name="email" required />
+                <label>Email liên hệ</label>
+                <box-icon name="envelope" color="gray"></box-icon>
+            </div>
+
+            <div class="static-box">
+                <span class="static-label">Giới tính</span>
+                <div class="radio-content">
+                    <label><input type="radio" name="gioiTinh" value="true" checked /> Nam</label>
+                    <label><input type="radio" name="gioiTinh" value="false" /> Nữ</label>
+                </div>
+                <box-icon name="male-female" color="gray"></box-icon>
+            </div>
+
+            <div class="static-box">
+                <span class="static-label">Ngày sinh</span>
+                <input type="date" name="ngaySinh" required />
+            </div>
+
+            <button class="btn" type="submit">Tạo hồ sơ</button>
+
+            <div class="regi-link">
+                Đã có tài khoản? <a th:href="@{/login}">Đăng nhập ngay</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="info-content">
+        <h2>WELCOME!</h2>
+        <p>Hệ thống sẽ tự động khởi tạo tài khoản đăng nhập sau khi bạn hoàn tất điền thông tin hồ sơ bên cạnh.</p>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<input type="hidden" id="globalSuccessMessage" th:value="${successMessage}" />
+<input type="hidden" id="globalErrorMessage" th:value="${errorMessage}" />
+
+<script th:src="@{/js/Error.js}"></script>
+
+</body>
+</html>

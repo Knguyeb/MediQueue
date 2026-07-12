@@ -33,6 +33,10 @@ public class TaiKhoanService {
         return taiKhoanRepository.save(taiKhoan);
     }
 
+    public Optional<TaiKhoan> findByTenDangNhap(String tenDangNhap) {
+        return taiKhoanRepository.findByTenDangNhap(tenDangNhap);
+    }
+
     // =====================================================================
     // HÀM QUAN TRỌNG: TỰ ĐỘNG TẠO TÀI KHOẢN TỪ HỌ TÊN
     // =====================================================================

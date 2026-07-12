@@ -29,6 +29,7 @@ public class BenhNhanService {
         return benhNhanRepository.findById(id);
     }
 
+    
     // =================================================================
     // HÀM THÊM MỚI BỆNH NHÂN (TỰ ĐỘNG TẠO TÀI KHOẢN)
     // =================================================================
@@ -49,5 +50,14 @@ public class BenhNhanService {
 
     public void deleteById(Integer id) {
         benhNhanRepository.deleteById(id);
+    }
+
+    public void save(BenhNhan bn) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'save'");
+    }
+
+    public Optional<BenhNhan> findBySoDienThoai(String soDienThoai) {
+        return benhNhanRepository.findBySoDienThoai(soDienThoai);
     }
 }

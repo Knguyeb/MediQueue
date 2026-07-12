@@ -94,6 +94,9 @@
     </div>
 
     <th:block layout:fragment="scripts">
+        <input type="hidden" id="successMessage" th:value="${successMessage}" />
+        <input type="hidden" id="errorMessage" th:value="${errorMessage}" />
+
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         
         <script th:src="@{/js/Share/Delete.js}"></script>
