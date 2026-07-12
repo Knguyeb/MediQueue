@@ -6,7 +6,6 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.khoinguyen.mediqueue.entity.BacSi;
-import com.khoinguyen.mediqueue.entity.BenhNhan;
 import com.khoinguyen.mediqueue.entity.TaiKhoan;
 import com.khoinguyen.mediqueue.entity.VaiTro;
 import com.khoinguyen.mediqueue.repository.BacSiRepository;
