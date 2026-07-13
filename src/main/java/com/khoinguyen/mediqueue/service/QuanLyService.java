@@ -54,4 +54,9 @@ public class QuanLyService {
     public Optional<QuanLy> findBySoDienThoai(String soDienThoai) {
         return quanLyRepository.findBySoDienThoai(soDienThoai);
     }
+
+    // Thêm hàm này vào trong class QuanLyService
+    public Optional<QuanLy> findByTaiKhoan_TenDangNhap(String tenDangNhap) {
+        return quanLyRepository.findByTaiKhoan_TenDangNhap(tenDangNhap);
+    }
 }

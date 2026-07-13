@@ -6,15 +6,20 @@ import com.khoinguyen.mediqueue.entity.BenhVien;
 import com.khoinguyen.mediqueue.entity.DanhMucChuyenKhoa;
 import com.khoinguyen.mediqueue.entity.PhongKham;
 import com.khoinguyen.mediqueue.entity.QuanLy;
+import com.khoinguyen.mediqueue.entity.TaiKhoan;
+import com.khoinguyen.mediqueue.entity.VaiTro;
+import com.khoinguyen.mediqueue.helper.PasswordHelper;
 import com.khoinguyen.mediqueue.repository.BenhVienRepository;
 import com.khoinguyen.mediqueue.repository.DanhMucChuyenKhoaRepository;
 import com.khoinguyen.mediqueue.service.BacSiService;
 import com.khoinguyen.mediqueue.service.BenhNhanService;
 import com.khoinguyen.mediqueue.service.PhongKhamService;
 import com.khoinguyen.mediqueue.service.QuanLyService;
+import com.khoinguyen.mediqueue.service.TaiKhoanService;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Autowired; // Bổ sung Autowired để chắc ăn
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -26,35 +31,53 @@ public class SeedData implements CommandLineRunner {
 
     private final BenhVienRepository benhVienRepository;
     private final DanhMucChuyenKhoaRepository danhMucChuyenKhoaRepository;
-    
-    // Inject 4 Service để tạo hệ sinh thái dữ liệu
     private final QuanLyService quanLyService;
     private final BacSiService bacSiService;
     private final BenhNhanService benhNhanService;
     private final PhongKhamService phongKhamService;
+    private final TaiKhoanService taiKhoanService; 
 
+    // Đánh dấu @Autowired để Spring bắt buộc phải dùng Constructor này để tiêm Service
+    @Autowired 
     public SeedData(BenhVienRepository benhVienRepository, 
                     DanhMucChuyenKhoaRepository danhMucChuyenKhoaRepository,
                     QuanLyService quanLyService, 
                     BacSiService bacSiService, 
                     BenhNhanService benhNhanService,
-                    PhongKhamService phongKhamService) {
+                    PhongKhamService phongKhamService,
+                    TaiKhoanService taiKhoanService) {
         this.benhVienRepository = benhVienRepository;
         this.danhMucChuyenKhoaRepository = danhMucChuyenKhoaRepository;
         this.quanLyService = quanLyService;
         this.bacSiService = bacSiService;
         this.benhNhanService = benhNhanService;
         this.phongKhamService = phongKhamService;
+        this.taiKhoanService = taiKhoanService;
     }
 
     @Override
     public void run(String... args) throws Exception {
+        
+        // =====================================================================
+        // 0. TẠO TÀI KHOẢN ADMIN (SYSTEM)
+        // =====================================================================
+        if (taiKhoanService.findByTenDangNhap("system").isEmpty()) {
+            TaiKhoan admin = new TaiKhoan();
+            admin.setTenDangNhap("system");
+            admin.setMatKhau(PasswordHelper.hashPassword("123456")); 
+            admin.setVaiTro(VaiTro.ADMIN);
+            admin.setTrangThai(true);
+            
+            taiKhoanService.save(admin);
+            System.out.println(">>> Đã khởi tạo tài khoản SYSTEM ADMIN (system / 123456) <<<");
+        }
+
         // Chỉ thêm dữ liệu mẫu nếu bảng benh_vien đang trống
         if (benhVienRepository.count() == 0) {
             System.out.println("Đang khởi tạo dữ liệu mẫu cho hệ thống MediQueue...");
 
             // =====================================================================
-            // 1. TẠO 10 BỆNH VIỆN
+            // 1. TẠO BỆNH VIỆN (Giữ nguyên logic của bạn)
             // =====================================================================
             BenhVien bv1 = new BenhVien();
             bv1.setTenBenhVien("Bệnh viện Chợ Rẫy");
@@ -149,7 +172,7 @@ public class SeedData implements CommandLineRunner {
             List<BenhVien> savedBenhViens = benhVienRepository.saveAll(Arrays.asList(bv1, bv2, bv3, bv4, bv5, bv6, bv7, bv8, bv9, bv10));
 
             // =====================================================================
-            // 2. TẠO 10 CHUYÊN KHOA
+            // 2. TẠO 10 CHUYÊN KHOA (Giữ nguyên logic của bạn)
             // =====================================================================
             List<DanhMucChuyenKhoa> savedChuyenKhoas = danhMucChuyenKhoaRepository.findAll();
             if (savedChuyenKhoas.isEmpty()) {
@@ -168,7 +191,7 @@ public class SeedData implements CommandLineRunner {
             }
 
             // =====================================================================
-            // 3. TẠO PHÒNG KHÁM, QUẢN LÝ VÀ BÁC SĨ CHO TỪNG BỆNH VIỆN
+            // 3. TẠO PHÒNG KHÁM, QUẢN LÝ VÀ BÁC SĨ CHO TỪNG BỆNH VIỆN (Giữ nguyên logic của bạn)
             // =====================================================================
             Random random = new Random();
             String[] hoList = {"Nguyễn", "Trần", "Lê", "Phạm", "Hoàng", "Huỳnh", "Phan", "Vũ", "Võ", "Đặng"};
@@ -186,7 +209,6 @@ public class SeedData implements CommandLineRunner {
                 quanLyService.themMoiQuanLy(ql); 
 
                 // --- B. TẠO 2 PHÒNG KHÁM CHO BỆNH VIỆN NÀY ---
-                // Chọn ngẫu nhiên 2 chuyên khoa để đặt tên phòng cho hợp lý
                 DanhMucChuyenKhoa randomCK1 = savedChuyenKhoas.get(random.nextInt(savedChuyenKhoas.size()));
                 DanhMucChuyenKhoa randomCK2 = savedChuyenKhoas.get(random.nextInt(savedChuyenKhoas.size()));
 
@@ -195,8 +217,8 @@ public class SeedData implements CommandLineRunner {
                 pk1.setSoPhong("P.101");
                 pk1.setTrangThai(true);
                 pk1.setBenhVien(bv);
-                pk1.setChuyenKhoa(randomCK1); // Bổ sung gắn chuyên khoa cho phòng khám luôn cho chuẩn
-                pk1 = phongKhamService.save(pk1); // Lưu lấy ID
+                pk1.setChuyenKhoa(randomCK1); 
+                pk1 = phongKhamService.save(pk1); 
 
                 PhongKham pk2 = new PhongKham();
                 pk2.setTenPhongKham("Phòng Khám " + randomCK2.getTenDanhMuc());
@@ -204,9 +226,8 @@ public class SeedData implements CommandLineRunner {
                 pk2.setTrangThai(true);
                 pk2.setBenhVien(bv);
                 pk2.setChuyenKhoa(randomCK2);
-                pk2 = phongKhamService.save(pk2); // Lưu lấy ID
+                pk2 = phongKhamService.save(pk2); 
 
-                // Cho vào mảng để xíu nữa duyệt nhét Bác sĩ vào
                 PhongKham[] danhSachPhongCuaBV = {pk1, pk2};
                 DanhMucChuyenKhoa[] danhSachChuyenKhoaCuaBV = {randomCK1, randomCK2};
 
@@ -219,7 +240,6 @@ public class SeedData implements CommandLineRunner {
                     bs.setGioiTinh(random.nextBoolean());
                     bs.setBenhVien(bv);
                     
-                    // Gán chuyên khoa và gán đúng Phòng Khám cho Bác sĩ
                     bs.setChuyenKhoa(danhSachChuyenKhoaCuaBV[i]);
                     bs.setPhongKham(danhSachPhongCuaBV[i]); 
                     
@@ -234,15 +254,13 @@ public class SeedData implements CommandLineRunner {
                 bsDu.setGioiTinh(random.nextBoolean());
                 bsDu.setBenhVien(bv);
                 
-                // Set chuyên khoa trùng với phòng 1 để bạn dễ test chức năng lọc bác sĩ theo chuyên khoa
                 bsDu.setChuyenKhoa(randomCK1); 
                 
-                // KHÔNG set phòng khám (để null)
                 bacSiService.themMoiBacSi(bsDu);
             }
 
             // =====================================================================
-            // 4. TẠO 3 BỆNH NHÂN (KHÁCH HÀNG TỰ DO)
+            // 4. TẠO 3 BỆNH NHÂN (KHÁCH HÀNG TỰ DO) (Giữ nguyên logic của bạn)
             // =====================================================================
             for (int i = 1; i <= 3; i++) {
                 BenhNhan bn = new BenhNhan();
@@ -257,7 +275,7 @@ public class SeedData implements CommandLineRunner {
             }
 
             System.out.println("============== HOÀN TẤT SEED DATA MỚI ==============");
-            System.out.println("Đã thêm: 10 Bệnh viện, 10 Chuyên khoa, 10 Quản lý, 20 Phòng khám, 30 Bác sĩ, 3 Bệnh nhân");
+            System.out.println("Đã thêm: 1 ADMIN, 10 Bệnh viện, 10 Chuyên khoa, 10 Quản lý, 20 Phòng khám, 30 Bác sĩ, 3 Bệnh nhân");
         }
     }
 }

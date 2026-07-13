@@ -1,400 +1,172 @@
 :root {
-    /* Tông màu Tím Y Học (Medical Purple) & Công nghệ */
-    --primary-color: #8b5cf6; /* Tím hiện đại, sáng sủa */
-    --primary-dark: #7c3aed;  /* Tím đậm khi hover */
+    --primary-color: #8b5cf6;
+    --primary-dark: #7c3aed;  
     --primary-glow: rgba(139, 92, 246, 0.4);
     
-    /* Nền xám đen sang trọng (Dark Theme) */
-    --dark-bg: #18181b;       /* Nền tổng thể xám đen */
-    --surface-bg: #27272a;    /* Nền thẻ nổi (Card, Footer) */
+    --dark-bg: #18181b;       
+    --surface-bg: #27272a;    
     
-    /* Màu chữ và viền */
     --white: #ffffff;
-    --text-main: #e4e4e7;     /* Chữ trắng xám chống mỏi mắt */
+    --text-main: #e4e4e7;     
     --text-muted: #a1a1aa;
     --border-color: rgba(255, 255, 255, 0.08);
 }
 
-/* Nền toàn trang */
 html, body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
+    height: 100%; margin: 0; padding: 0;
     background-color: var(--dark-bg) !important;
     color: var(--text-main);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    display: flex;
-    flex-direction: column;
     overflow-x: hidden;
 }
 
-body.d-flex {
-    display: flex !important;
-    flex-direction: column !important;
-    min-height: 100vh !important;
-}
+body.d-flex, body.admin-body { display: flex !important; flex-direction: column !important; min-height: 100vh !important; }
+main { flex-grow: 1 !important; }
 
-main {
-    flex-grow: 1 !important;
-}
-
-main.container {
-    padding-top: 1.5rem !important;
-    max-width: 98%;
-}
-
-/* --------------------------------------
-   NAVBAR (THANH ĐIỀU HƯỚNG TÍM Y HỌC)
-   -------------------------------------- */
-
-/* Container chứa cả Logo và Chữ */
-.navbar-brand {
-    padding: 0 10px !important;
-    height: 100%; /* Đảm bảo nó cao bằng Navbar */
+/* =========================================================
+   1. FLOATING ISLAND - NAVBAR (PUBLIC) & HEADER (ADMIN)
+========================================================= */
+.floating-glass {
+    min-height: 72px; /* Cố định chiều cao tối thiểu của tất cả các Header/Navbar */
     display: flex;
-    align-items: center;
+    align-items: center; /* Đảm bảo mọi thứ bên trong luôn nằm chính giữa theo chiều dọc */
+    padding: 0 20px !important; 
+    border-radius: 16px;
+    margin: 15px 20px;
+    position: sticky; top: 15px;
+    z-index: 1030;
+    
+    background: rgba(39, 39, 42, 0.75) !important; 
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(139, 92, 246, 0.25) !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 20px rgba(139, 92, 246, 0.1);
 }
 
-/* Wrapper riêng cho logo - giữ vị trí ổn định */
-.brand-logo-container {
-    height: 100%; 
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 12px;
-    position: relative; /* Cho phép logo tràn ra nếu cần */
+/* Ghi đè class Navbar của Bootstrap để tránh nó tự thay đổi height */
+.navbar {
+    height: 72px !important;
+    padding: 0 !important; /* Reset padding của bootstrap để floating-glass kiểm soát */
 }
 
-/* Kích thước Logo (Bạn có thể tăng height thoải mái ở đây) */
-.nav-logo {
-    height: 55px; /* Tăng kích thước N tại đây (ví dụ: 50px, 55px, 60px) */
-    width: auto;
-    object-fit: contain;
-    filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.3)); /* Thêm đổ bóng để logo trông nổi bật */
-    transition: transform 0.3s ease;
+.admin-header.floating-glass {
+    padding: 0 20px !important;
 }
 
-/* Tăng kích thước chữ để cân đối với logo mới */
-.brand-text {
-    font-size: 1.6rem;
-    font-weight: 700;
-    color: white;
-    margin-top: 2px; /* Căn chỉnh nhẹ cho thẳng hàng với logo */
+/* Tùy chỉnh riêng Public Navbar */
+.custom-navbar.floating-glass {
+    padding: 0.5rem 1.5rem;
+    background: linear-gradient(135deg, rgba(39,39,42,0.85) 0%, rgba(24,24,27,0.85) 100%) !important;
 }
 
-.custom-navbar {
-    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
-    box-shadow: 0 4px 15px var(--primary-glow);
-    padding: 0.8rem 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+/* Tùy chỉnh riêng Admin/QLBS Header */
+.admin-header.floating-glass {
+    height: 76px; padding: 0 1.5rem;
+    display: flex; align-items: center; justify-content: space-between;
+    z-index: 1020;
 }
 
-.navbar-brand {
-    color: var(--white) !important;
-    font-weight: 700 !important;
-    font-size: 1.5rem;
-    transition: all 0.3s ease;
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    margin-right: 1rem;
-    letter-spacing: 1px;
+/* =========================================================
+   2. PUBLIC UI (TEXT, LINKS, DROPDOWN, FOOTER)
+========================================================= */
+.text-gradient {
+    background: linear-gradient(to right, #ffffff, #d8b4fe);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    text-shadow: 0px 4px 15px rgba(139, 92, 246, 0.3);
 }
+.nav-link { color: rgba(255, 255, 255, 0.85) !important; transition: all 0.3s ease; font-weight: 500; }
+.nav-link:hover { color: var(--white) !important; transform: translateY(-2px); }
+.navbar-brand { font-weight: 700 !important; letter-spacing: 0.5px; transition: all 0.3s ease; }
 
-.navbar-brand:hover {
-    background-color: rgba(255, 255, 255, 0.15);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
+.dropdown-menu.custom-modal-bg { border: 1px solid var(--border-color) !important; border-radius: 12px; animation: fadeInDropdown 0.3s ease; }
+.dropdown-item.hover-primary:hover { background-color: rgba(139, 92, 246, 0.15); color: var(--primary-color) !important; }
+.dropdown-item.hover-danger:hover { background-color: rgba(220, 53, 69, 0.15); color: #ff4d4d !important; }
+@keyframes fadeInDropdown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
-.nav-link {
-    color: rgba(255, 255, 255, 0.85) !important;
-    transition: all 0.3s ease;
-    padding: 0.6rem 1.2rem !important;
-    margin: 0 0.3rem;
-    border-radius: 6px;
-    font-weight: 500;
-    position: relative;
-    background-color: transparent;
-}
-
-.nav-link:hover {
-    background-color: rgba(255, 255, 255, 0.15);
-    color: var(--white) !important;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.nav-link:active {
-    transform: translateY(0);
-}
-
-.navbar-nav .nav-item:last-child {
-    margin-left: 1rem;
-    padding-left: 1rem;
-    border-left: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-.navbar-nav .nav-item:last-child .nav-link {
-    background-color: rgba(255, 255, 255, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    font-weight: 600;
-}
-
-.navbar-nav .nav-item:last-child .nav-link:hover {
-    background-color: var(--white);
-    color: var(--primary-dark) !important;
-}
-
-/* --------------------------------------
-   FOOTER (CHÂN TRANG XÁM ĐEN)
-   -------------------------------------- */
-.footer {
-    border-top: 2px solid var(--primary-color) !important;
-    background-color: var(--surface-bg) !important;
-    color: var(--text-muted) !important;
-    padding: 3rem 0 1rem 0;
-    margin-top: auto;
-}
-
-.footer-columns {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 2rem;
-    margin-bottom: 2rem;
-    text-align: center;
-}
-
-.footer-column {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
-
-.footer-tagline {
-    font-size: 1.1rem;
-    font-weight: 500;
-    color: var(--primary-color);
-    margin: 0;
-    font-style: italic;
-}
-
-.footer-contact p {
-    margin: 0;
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-    color: var(--text-main);
-}
-
-.footer-contact i {
-    color: var(--primary-color);
-    width: 16px;
-}
-
-.footer-social {
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-    margin-top: 1rem;
-}
-
+.footer { border-top: 1px solid var(--border-color) !important; background-color: var(--surface-bg) !important; padding: 3rem 0 1rem 0; margin-top: auto; }
+.footer-columns { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-bottom: 2rem; text-align: center; }
 .footer-social a {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid var(--border-color);
-    border-radius: 50%;
-    transition: all 0.3s ease;
-    color: var(--text-main) !important;
-    text-decoration: none;
-    font-size: 1rem;
+    display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-color); color: var(--text-main) !important; transition: all 0.3s ease;
 }
+.footer-social a:hover { background: var(--primary-color); color: var(--white) !important; transform: translateY(-3px); }
 
-.footer-social a:hover {
-    background: var(--primary-color);
-    color: var(--white) !important;
-    border-color: var(--primary-color);
-    transform: translateY(-3px);
-    box-shadow: 0 6px 12px var(--primary-glow);
-}
+/* =========================================================
+   3. ADMIN / QLBS DASHBOARD UI
+========================================================= */
+.admin-container { display: flex; min-height: 100vh; width: 100%; position: relative; }
+.admin-main { flex-grow: 1; display: flex; flex-direction: column; width: 100%; min-height: 100vh; }
 
-.footer-column h5 {
-    color: var(--white);
-    font-weight: 600;
-    margin-bottom: 1.2rem;
-    font-size: 1.1rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.footer-divider {
-    width: 100%;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
-    margin: 1.5rem 0;
-    opacity: 0.5;
-}
-
-.footer-bottom {
-    text-align: center;
-    padding-top: 1rem;
-}
-
-.footer-copyright {
-    font-size: 0.9rem;
-    color: var(--text-muted);
-    margin: 0;
-}
-
-/* --------------------------------------
-   FLOAT BUTTON & CHATBOT
-   -------------------------------------- */
-.chatbot-fab {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    width: 60px;
-    height: 60px;
-    background-color: var(--primary-color);
-    color: var(--white);
-    border: none;
-    border-radius: 50%;
-    box-shadow: 0 4px 15px var(--primary-glow);
-    font-size: 24px;
-    cursor: pointer;
-    z-index: 1040;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.chatbot-fab:hover {
-    transform: scale(1.1);
-    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.6);
-    background-color: var(--primary-dark);
-}
-
-/* Kiểu dáng tin nhắn Chatbot (Dark Mode) */
-.chat-message {
-    max-width: 85%;
-    padding: 10px 15px;
-    border-radius: 15px;
-    font-size: 14px;
-    line-height: 1.5;
-    margin-bottom: 12px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-}
-
-.ai-message {
-    background-color: rgba(255, 255, 255, 0.05);
+/* Nút Toggle Sidebar 3 gạch */
+.header-toggle-btn {
+    background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); border-radius: 12px;
+    width: 42px; height: 42px; display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem; cursor: pointer; margin-right: 20px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     color: var(--text-main);
-    align-self: flex-start;
-    border-bottom-left-radius: 2px;
-    border: 1px solid var(--border-color);
 }
+.header-toggle-btn:hover { color: var(--primary-color) !important; background: rgba(139, 92, 246, 0.1); border-color: rgba(139, 92, 246, 0.5); transform: scale(1.05); }
 
-.user-message {
-    background-color: var(--primary-color);
-    color: var(--white);
-    align-self: flex-end;
-    border-bottom-right-radius: 2px;
-    margin-left: auto;
+/* Khối Profile Capsule */
+.admin-profile-box {
+    background: rgba(139, 92, 246, 0.08) !important; padding: 5px 16px 5px 6px; border-radius: 50px;
+    border: 1px solid rgba(139, 92, 246, 0.25) !important; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
+.admin-profile-box:hover { background: rgba(139, 92, 246, 0.15) !important; border-color: var(--primary-color) !important; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(139, 92, 246, 0.2); }
+.avatar-border { border-color: var(--primary-color) !important; }
 
-/* Modal / Offcanvas Dark Theme Override */
-.offcanvas {
-    background-color: var(--surface-bg) !important;
-    color: var(--text-main) !important;
-    border-left: 1px solid var(--primary-color) !important;
+/* Nút Đăng xuất xịn xò */
+.btn-logout-custom {
+    background: rgba(220, 53, 69, 0.08) !important; color: #ff4d4d !important; border: 1px solid rgba(220, 53, 69, 0.2) !important;
+    padding: 8px 18px; border-radius: 12px; font-weight: 600; transition: all 0.3s ease;
 }
+.btn-logout-custom:hover { background: #ff4d4d !important; color: #ffffff !important; border-color: #ff4d4d !important; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(220, 53, 69, 0.3); }
 
-.offcanvas-header {
-    border-bottom: 1px solid var(--border-color) !important;
+/* Drawer Sidebar */
+.admin-sidebar {
+    width: 280px; background-color: var(--surface-bg); border-right: 1px solid var(--border-color);
+    transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1); display: flex; flex-direction: column;
+    z-index: 1050; position: fixed; height: 100vh; left: 0; top: 0; transform: translateX(-100%);
+    box-shadow: 5px 0 25px rgba(0, 0, 0, 0.5);
 }
+.admin-sidebar.active { transform: translateX(0); }
+.sidebar-header {
+    height: 76px; display: flex; align-items: center; padding: 0 1.5rem; border-bottom: 1px solid var(--border-color);
+    background: linear-gradient(135deg, rgba(39, 39, 42, 1) 0%, rgba(24, 24, 27, 1) 100%);
+}
+.sidebar-brand { color: var(--white); font-weight: 800; font-size: 1.15rem; display: flex; align-items: center; gap: 10px; text-decoration: none; letter-spacing: 0.5px; }
+.sidebar-menu { padding: 1.5rem 0; overflow-y: auto; flex-grow: 1; }
+.nav-link-sidebar {
+    display: flex; align-items: center; padding: 14px 1.5rem; margin: 4px 12px; border-radius: 8px;
+    color: var(--text-main); text-decoration: none; transition: all 0.3s ease; font-weight: 500; gap: 14px;
+}
+.nav-link-sidebar i { width: 22px; font-size: 1.2rem; color: var(--primary-color); text-align: center; transition: transform 0.3s ease;}
+.nav-link-sidebar:hover { background-color: rgba(139, 92, 246, 0.15); color: var(--white); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+.nav-link-sidebar:hover i { transform: scale(1.2); }
 
-.offcanvas-title {
-    color: var(--primary-color) !important;
+/* Overlay Mờ Kính */
+.sidebar-overlay {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background-color: rgba(0, 0, 0, 0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    z-index: 1045; opacity: 0; visibility: hidden; transition: opacity 0.4s ease, visibility 0.4s ease;
 }
+.sidebar-overlay.active { opacity: 1; visibility: visible; }
 
-.offcanvas-footer, .border-top {
-    border-top: 1px solid var(--border-color) !important;
-    background-color: rgba(0,0,0,0.2) !important;
-}
+/* =========================================================
+   4. UTILITIES & MODALS
+========================================================= */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--dark-bg); }
+::-webkit-scrollbar-thumb { background: var(--primary-color); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--primary-dark); }
 
-.form-control {
-    background-color: rgba(255,255,255,0.05) !important;
-    border: 1px solid var(--border-color) !important;
-    color: var(--text-main) !important;
-}
+.custom-modal-bg { background-color: var(--surface-bg) !important; color: var(--text-main); }
+.modal-content { border: 1px solid var(--border-color); border-radius: 12px; }
+.modal-header { border-bottom: 1px solid var(--border-color); }
+.btn-close { filter: invert(1) grayscale(100%) brightness(200%); }
 
-.form-control:focus {
-    border-color: var(--primary-color) !important;
-    box-shadow: 0 0 0 0.25rem var(--primary-glow) !important;
-}
+.pulse-anim { animation: pulseGlow 2s infinite; border-radius: 50%; }
+@keyframes pulseGlow { 0% { box-shadow: 0 0 0 0 rgba(255, 77, 77, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(255, 77, 77, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 77, 77, 0); } }
+.chatbot-fab.pulse-anim { animation: pulseGlowPrimary 2s infinite; position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; background-color: var(--primary-color); color: var(--white); border: none; border-radius: 50%; box-shadow: 0 4px 15px var(--primary-glow); font-size: 24px; cursor: pointer; z-index: 1040; transition: transform 0.3s ease; }
+.chatbot-fab:hover { transform: scale(1.1); background-color: var(--primary-dark); }
+@keyframes pulseGlowPrimary { 0% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(139, 92, 246, 0); } 100% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0); } }
 
-.btn-primary {
-    background-color: var(--primary-color) !important;
-    border-color: var(--primary-color) !important;
-}
-
-.btn-primary:hover {
-    background-color: var(--primary-dark) !important;
-}
-
-.btn-close {
-    filter: invert(1) grayscale(100%) brightness(200%);
-}
-
-/* --------------------------------------
-   DROPDOWN MENU (DARK THEME)
-   -------------------------------------- */
-/* Định dạng hộp menu thả xuống */
-.dropdown-menu {
-    background-color: var(--surface-bg) !important;
-    border: 1px solid var(--border-color) !important;
-    border-radius: 10px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-    padding: 0.5rem;
-    margin-top: 0.8rem !important; /* Tạo khoảng cách mượt mà với thanh nav */
-}
-
-/* Định dạng từng dòng item bên trong */
-.dropdown-item {
-    color: var(--text-main) !important;
-    border-radius: 6px;
-    padding: 0.6rem 1.2rem;
-    font-weight: 500;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-}
-
-/* Hiệu ứng khi di chuột vào từng dòng item */
-.dropdown-item:hover, .dropdown-item:focus {
-    background-color: rgba(255, 255, 255, 0.1) !important; /* Nền sáng nhẹ */
-    color: var(--white) !important;
-    transform: translateX(4px); /* Trượt nhẹ chữ sang phải tạo cảm giác 3D */
-}
-
-/* Căn chỉnh icon bên trong dropdown để chữ luôn thẳng hàng */
-.dropdown-item i {
-    font-size: 1.1rem;
-    width: 24px;
-    text-align: center;
-}
-
-/* Đường kẻ ngang phân cách */
-.dropdown-divider {
-    border-top: 1px solid var(--border-color) !important;
-    margin: 0.5rem 0;
-    opacity: 0.5;
-}
-
-/* Giữ hiệu ứng sáng cho nút "Quản lý Người dùng" khi menu đang xổ xuống */
-.nav-item.dropdown .nav-link.show {
-    background-color: rgba(255, 255, 255, 0.15);
-    color: var(--white) !important;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
+.noti-dot { width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--surface-bg); }

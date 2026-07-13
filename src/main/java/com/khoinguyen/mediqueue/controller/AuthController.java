@@ -17,7 +17,7 @@ import com.khoinguyen.mediqueue.entity.BenhNhan;
 import com.khoinguyen.mediqueue.entity.QuanLy;
 import com.khoinguyen.mediqueue.entity.BacSi;
 import com.khoinguyen.mediqueue.entity.TaiKhoan;
-import com.khoinguyen.mediqueue.entity.VaiTro; // Nhớ import đúng file Enum của bạn
+import com.khoinguyen.mediqueue.entity.VaiTro; 
 import com.khoinguyen.mediqueue.helper.PasswordHelper;
 import com.khoinguyen.mediqueue.service.BenhNhanService;
 import com.khoinguyen.mediqueue.service.BacSiService;
@@ -28,9 +28,9 @@ import com.khoinguyen.mediqueue.service.TaiKhoanService;
 public class AuthController {
 
     private final TaiKhoanService taiKhoanService;
-    private final BenhNhanService benhNhanService; // Cần thêm Service này để lưu hồ sơ
-    private final BacSiService bacSiService; // Cần thêm Service này để lưu hồ sơ
-    private final QuanLyService quanLyService; // Cần thêm Service này để lưu hồ sơ
+    private final BenhNhanService benhNhanService; 
+    private final BacSiService bacSiService; 
+    private final QuanLyService quanLyService; 
 
     public AuthController(TaiKhoanService taiKhoanService, BenhNhanService benhNhanService, BacSiService bacSiService, QuanLyService quanLyService) {
         this.taiKhoanService = taiKhoanService;
@@ -46,7 +46,7 @@ public class AuthController {
     @GetMapping("/login")
     public String showLoginForm(HttpSession session) {
         if (session.getAttribute("loggedInUser") != null) {
-            return "redirect:/"; // Đã đăng nhập thì đá về Trang chủ
+            return "redirect:/"; 
         }
         return "auth/login"; 
     }
@@ -63,70 +63,66 @@ public class AuthController {
     // 2. XỬ LÝ ĐĂNG NHẬP
     // =================================================================
 
-    @PostMapping("/login")
-    public String processLogin(@RequestParam("tenDangNhap") String loginInput, // Đổi tên biến sang loginInput cho rõ nghĩa
+   @PostMapping("/login")
+    public String processLogin(@RequestParam("tenDangNhap") String loginInput, 
                             @RequestParam("matKhau") String matKhau,
                             HttpSession session,
                             Model model,
                             RedirectAttributes redirectAttributes) {
         
-        // Bước 1: Thử tìm kiếm theo Tên đăng nhập trong bảng Tài khoản
-        Optional<TaiKhoan> opt = taiKhoanService.findByTenDangNhap(loginInput);
+        Optional<TaiKhoan> opt = Optional.empty();
+        String tenBenhVien = null;
 
-        // Bước 2: Nếu không thấy, thử tìm kiếm theo Số điện thoại trong bảng Bệnh nhân
+        // 1. Cố gắng tìm tài khoản bằng SĐT trước (phổ biến nhất)
+        Optional<BenhNhan> optBenhNhan = benhNhanService.findBySoDienThoai(loginInput);
+        Optional<BacSi> optBacSi = bacSiService.findBySoDienThoai(loginInput);
+        Optional<QuanLy> optQuanLy = quanLyService.findBySoDienThoai(loginInput);
+
+        if (optBenhNhan.isPresent()) {
+            opt = Optional.ofNullable(optBenhNhan.get().getTaiKhoan());
+        } else if (optBacSi.isPresent()) {
+            opt = Optional.ofNullable(optBacSi.get().getTaiKhoan());
+            if (optBacSi.get().getBenhVien() != null) tenBenhVien = optBacSi.get().getBenhVien().getTenBenhVien();
+        } else if (optQuanLy.isPresent()) {
+            opt = Optional.ofNullable(optQuanLy.get().getTaiKhoan());
+            if (optQuanLy.get().getBenhVien() != null) tenBenhVien = optQuanLy.get().getBenhVien().getTenBenhVien();
+        }
+
+        // 2. Nếu không tìm thấy qua SĐT, thì thử tìm bằng Tên đăng nhập
         if (opt.isEmpty()) {
-            // Bạn cần đảm bảo BenhNhanService của bạn đã viết hàm findBySoDienThoai
-            Optional<BenhNhan> optBenhNhan = benhNhanService.findBySoDienThoai(loginInput);
+            opt = taiKhoanService.findByTenDangNhap(loginInput);
             
-            if (optBenhNhan.isPresent()) {
-                // Nếu tìm thấy bệnh nhân sở hữu số điện thoại này, lấy ra tài khoản liên kết
-                opt = Optional.ofNullable(optBenhNhan.get().getTaiKhoan());
+            // Nếu tìm thấy qua Tên đăng nhập, vẫn cố gắng lấy tên bệnh viện
+            if (opt.isPresent()) {
+                // Thử tìm lại trong bảng Bác Sĩ hoặc Quản lý dựa trên tên đăng nhập
+                Optional<BacSi> bs = bacSiService.findByTaiKhoan_TenDangNhap(loginInput);
+                Optional<QuanLy> ql = quanLyService.findByTaiKhoan_TenDangNhap(loginInput);
+                
+                if (bs.isPresent() && bs.get().getBenhVien() != null) tenBenhVien = bs.get().getBenhVien().getTenBenhVien();
+                else if (ql.isPresent() && ql.get().getBenhVien() != null) tenBenhVien = ql.get().getBenhVien().getTenBenhVien();
             }
         }
 
-        if (opt.isEmpty()) {
-            // Cần đảm bảo BacSiService của bạn đã viết hàm findBySoDienThoai
-            Optional<BacSi> optBacSi = bacSiService.findBySoDienThoai(loginInput);
-            if (optBacSi.isPresent()) {
-                opt = Optional.ofNullable(optBacSi.get().getTaiKhoan());
-            }
-        }
-
-        if (opt.isEmpty()) {
-            // Cần đảm bảo QuanLyService của bạn đã viết hàm findBySoDienThoai
-            Optional<QuanLy> optQuanLy = quanLyService.findBySoDienThoai(loginInput);
-            if (optQuanLy.isPresent()) {
-                opt = Optional.ofNullable(optQuanLy.get().getTaiKhoan());
-            }
-        }
-
-
-        // Bước 3: Kiểm tra tài khoản và mật khẩu (Giữ nguyên logic cũ)
+        // 3. Xử lý logic đăng nhập như cũ
         if (opt.isPresent()) {
             TaiKhoan taiKhoan = opt.get();
-            
-            // SỬA DÒNG NÀY: Dùng hàm verifyPassword thay vì .equals()
             if (PasswordHelper.verifyPassword(matKhau, taiKhoan.getMatKhau())) {
-                
                 if (taiKhoan.getTrangThai() != null && !taiKhoan.getTrangThai()) {
-                    model.addAttribute("errorMessage", "Tài khoản của bạn đã bị khóa! Vui lòng liên hệ quản trị viên.");
-                    model.addAttribute("savedTenDangNhap", loginInput);
+                    model.addAttribute("errorMessage", "Tài khoản đã bị khóa!");
                     return "auth/login";
                 }
                 
                 session.setAttribute("loggedInUser", taiKhoan);
-                if (taiKhoan.getVaiTro() != null) {
-                    session.setAttribute("QuyenHan", taiKhoan.getVaiTro().toString());
-                }
+                if (taiKhoan.getVaiTro() != null) session.setAttribute("QuyenHan", taiKhoan.getVaiTro().toString());
+                if (tenBenhVien != null) session.setAttribute("tenBenhVien", tenBenhVien);
                 
-                redirectAttributes.addFlashAttribute("successMessage", "Đăng nhập thành công! Chào mừng trở lại.");
+                redirectAttributes.addFlashAttribute("successMessage", "Đăng nhập thành công!");
                 return "redirect:/home";
             }
         }
         
-        // Đăng nhập thất bại
-        model.addAttribute("errorMessage", "Tài khoản hoặc mật khẩu không chính xác!");
-        model.addAttribute("savedTenDangNhap", loginInput); // Trả lại chuỗi vừa gõ lên ô nhập liệu
+        model.addAttribute("errorMessage", "Tài khoản/SĐT hoặc mật khẩu không chính xác!");
+        model.addAttribute("savedTenDangNhap", loginInput); 
         return "auth/login"; 
     }
 
@@ -143,34 +139,30 @@ public class AuthController {
             @RequestParam("ngaySinh") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate ngaySinh,
             RedirectAttributes redirectAttributes) {
 
-        // 1. Kiểm tra SĐT đã tồn tại chưa
         if (taiKhoanService.findByTenDangNhap(soDienThoai).isPresent()) {
             redirectAttributes.addFlashAttribute("errorMessage", "Số điện thoại này đã được đăng ký! Vui lòng đăng nhập.");
             return "redirect:/register";
         }
 
         try {
-            // 2. TẠO TÀI KHOẢN TRƯỚC (Để lấy ID liên kết)
             TaiKhoan tk = new TaiKhoan();
-            tk.setTenDangNhap(soDienThoai); // Dùng SĐT làm Tên đăng nhập
-            tk.setMatKhau(PasswordHelper.hashPassword("123")); // Mật khẩu mặc định là 123
+            tk.setTenDangNhap(soDienThoai); 
+            tk.setMatKhau(PasswordHelper.hashPassword("123")); 
             tk.setVaiTro(VaiTro.BENH_NHAN); 
             tk.setTrangThai(true);
 
             TaiKhoan savedTaiKhoan = taiKhoanService.save(tk);
             
-            // 3. TẠO HỒ SƠ BỆNH NHÂN (Lưu thông tin cá nhân)
             BenhNhan bn = new BenhNhan();
             bn.setHoTen(hoTen);
             bn.setSoDienThoai(soDienThoai);
             bn.setEmail(email);
             bn.setGioiTinh(gioiTinh);
             bn.setNgaySinh(ngaySinh);
-            bn.setTaiKhoan(savedTaiKhoan); // Khóa ngoại trỏ về tài khoản vừa tạo
+            bn.setTaiKhoan(savedTaiKhoan); 
             
-            benhNhanService.save(bn); // Lưu xuống DB
+            benhNhanService.save(bn); 
              
-            // 4. Thông báo thành công và chuyển về trang đăng nhập
             redirectAttributes.addFlashAttribute("successMessage", 
                 "Tạo hồ sơ thành công! <br>Tài khoản: <b>" + soDienThoai + "</b> <br>Mật khẩu: <b>123</b>");
                 
@@ -188,8 +180,8 @@ public class AuthController {
     
     @GetMapping("/logout")
     public String logout(HttpSession session, RedirectAttributes redirectAttributes) {
-        session.invalidate(); // Xóa sạch bộ nhớ Session
+        session.invalidate(); 
         redirectAttributes.addFlashAttribute("successMessage", "Đăng xuất thành công!");
-        return "redirect:/home"; // Chuyển hướng về trang chủ
+        return "redirect:/home"; 
     }
 }

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title layout:title-pattern="$CONTENT_TITLE - Bác Sĩ">MediQueue - Bác Sĩ</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" th:href="@{/css/site.css}" />
+    <link rel="stylesheet" th:href="@{/css/_Layout.css}" />
+</head>
+
+<body class="admin-body">
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeDrawerSidebar()"></div>
+
+    <div class="admin-container">
+        <!-- Drawer Sidebar -->
+        <div class="admin-sidebar" id="adminSidebar">
+            <div class="sidebar-header">
+                <a href="#" class="sidebar-brand text-gradient">
+                    <i class="fas fa-stethoscope me-2"></i>
+                    <span>BÁC SĨ PANEL</span>
+                </a>
+                <button class="btn-close btn-close-white ms-auto d-block opacity-75" onclick="closeDrawerSidebar()"></button>
+            </div>
+
+            <div class="sidebar-menu">
+                <div class="nav-item-sidebar">
+                    <a class="nav-link-sidebar" th:href="@{/bacsi/index}">
+                        <i class="fas fa-home"></i> <span>Trang chủ</span>
+                    </a>
+                    <a class="nav-link-sidebar" th:href="@{/bacsi/lichkham}">
+                        <i class="fas fa-calendar-check"></i> <span>Lịch Khám</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="admin-main" id="adminMain">
+            <header class="admin-header floating-glass">
+                <div class="d-flex align-items-center">
+                    <button class="header-toggle-btn" onclick="openDrawerSidebar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <!-- Hiển thị tên bệnh viện động từ Session -->
+                   <a class="navbar-brand d-flex align-items-center text-light m-0" th:href="@{/bacsi/index}">
+                        <div class="brand-logo-container me-2">
+                            <img src="/images/Logo1.png" alt="Logo" class="nav-logo" style="height: 35px; width: auto; object-fit: contain;">
+                        </div>
+                        <span class="brand-text fw-bold text-gradient fs-4" th:text="${session.tenBenhVien ?: 'Phòng Khám MediQueue'}">Phòng Khám MediQueue</span>
+                    </a>
+                </div>
+
+                <div class="navbar-nav flex-row align-items-center gap-4 pe-2">
+                    <!-- Nút Chuông Thông Báo -->
+                    <div class="position-relative d-flex align-items-center">
+                        <a href="#" class="nav-link px-2 transition-all" data-bs-toggle="modal" data-bs-target="#thongBaoModal" style="color: var(--text-main);">
+                            <i class="fas fa-bell fs-4"></i>
+                            <span class="position-absolute top-0 start-100 translate-middle noti-dot" style="background-color: #ff4d4d; border-color: transparent;"></span>
+                        </a>
+                    </div>
+
+                    <!-- Profile Capsule (Chỉ giữ lại tên đăng nhập) -->
+                    <a href="#" class="admin-profile-box d-flex align-items-center text-decoration-none">
+                        <img src="https://ui-avatars.com/api/?name=BS&background=18181b&color=8b5cf6" alt="Avatar" class="rounded-circle border border-2 avatar-border shadow-sm" width="40" height="40">
+                        <div class="ms-2 d-none d-md-block text-start pe-2">
+                            <div class="fw-bold text-light mb-0" style="font-size: 1rem;" th:text="${session.loggedInUser != null ? session.loggedInUser.tenDangNhap : 'Bác Sĩ'}">Bác Sĩ</div>
+                        </div>
+                    </a>
+
+                    <!-- Nút Đăng xuất -->
+                    <button class="btn btn-logout-custom d-flex align-items-center gap-2" onclick="confirmLogoutSwal('/logout')">
+                        <i class="fas fa-sign-out-alt"></i> <span class="d-none d-sm-inline">Đăng xuất</span>
+                    </button>
+                </div>
+            </header>
+
+            <main role="main" class="container-fluid flex-grow-1 p-4">
+                <div layout:fragment="content"></div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal Thông báo -->
+    <div class="modal fade" id="thongBaoModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content custom-modal-bg shadow-lg">
+                <div class="modal-header border-bottom-0 pb-0">
+                    <h5 class="modal-title fw-bold text-gradient"><i class="fas fa-bell me-2"></i> Thông báo</h5>
+                    <button type="button" class="btn-close btn-close-white opacity-75" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="thongBaoBody">
+                    <div class="text-center py-4"><div class="spinner-border" style="color: var(--primary-color);"></div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <input type="hidden" id="successMessage" th:value="${successMessage}" />
+    <input type="hidden" id="errorMessage" th:value="${errorMessage}" />
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <script th:src="@{/js/SideBar.js}"></script>
+    <script th:src="@{/js/ThongBao.js}"></script>
+    <script th:src="@{/js/DangXuat.js}"></script>
+    <script th:src="@{/js/Success.js}"></script>
+    <th:block layout:fragment="scripts"></th:block>
+
+    <script>
+        function openDrawerSidebar() {
+            document.getElementById('adminSidebar').classList.add('active');
+            document.getElementById('sidebarOverlay').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeDrawerSidebar() {
+            document.getElementById('adminSidebar').classList.remove('active');
+            document.getElementById('sidebarOverlay').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    </script>
+</body>
+</html>

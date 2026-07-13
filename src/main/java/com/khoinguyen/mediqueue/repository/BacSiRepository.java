@@ -7,5 +7,6 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface BacSiRepository extends JpaRepository<BacSi, Integer> {
+    Optional<BacSi> findByTaiKhoan_TenDangNhap(String tenDangNhap);
     Optional<BacSi> findBySoDienThoai(String soDienThoai);
 }

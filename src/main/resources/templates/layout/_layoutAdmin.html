@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title layout:title-pattern="$CONTENT_TITLE - Admin">MediQueue - Admin</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" th:href="@{/css/site.css}" />
+    <link rel="stylesheet" th:href="@{/css/_Layout.css}" />
+</head>
+
+<body class="admin-body">
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeDrawerSidebar()"></div>
+
+    <div class="admin-container">
+        <div class="admin-sidebar" id="adminSidebar">
+            <div class="sidebar-header">
+                <a href="#" class="sidebar-brand text-gradient">
+                    <i class="fas fa-heartbeat me-2"></i>
+                    <span>MEDIQUEUE ADMIN</span>
+                </a>
+                <button class="btn-close btn-close-white ms-auto d-block opacity-75" onclick="closeDrawerSidebar()"></button>
+            </div>
+
+            <div class="sidebar-menu">
+                <div class="nav-item-sidebar">
+                    <a class="nav-link-sidebar" th:href="@{/quanly/index}">
+                        <i class="fas fa-home"></i> <span>Trang chủ</span>
+                    </a>
+                    <a class="nav-link-sidebar" th:href="@{/benhvien/index}">
+                        <i class="fas fa-hospital"></i> <span>Cơ Sở Y Tế</span>
+                    </a>
+                </div>
+                <div class="nav-item-sidebar mt-2">
+                    <a class="nav-link-sidebar" th:href="@{/quanly/taikhoan}">
+                        <i class="fas fa-users"></i> <span>Quản Lý Tài Khoản</span>
+                    </a>
+                </div>
+                <div class="nav-item-sidebar mt-2">
+                    <a class="nav-link-sidebar" th:href="@{/hethong/nhatky}">
+                        <i class="fas fa-bug"></i> <span>Nhật Ký Hệ Thống</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="admin-main" id="adminMain">
+            <header class="admin-header floating-glass">
+                <div class="d-flex align-items-center">
+                    <button class="header-toggle-btn" onclick="openDrawerSidebar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <a class="navbar-brand d-flex align-items-center text-light" th:href="@{/home}">
+                        <div class="brand-logo-container me-2">
+                            <img src="/images/Logo1.png" alt="Logo" class="nav-logo" style="height: 40px; width: auto; object-fit: contain;">
+                        </div>
+                        <span class="brand-text fw-bold text-gradient fs-4">MediQueue</span>
+                    </a>
+                </div>
+
+                <div class="navbar-nav flex-row align-items-center gap-4 pe-2">
+                    <div class="position-relative d-flex align-items-center">
+                        <a th:href="@{/hethong/nhatky}" class="nav-link px-2 transition-all" title="Nhật ký hệ thống" style="color: #ff4d4d;">
+                            <i class="fas fa-bug fs-4 pulse-anim"></i>
+                        </a>
+                    </div>
+
+                    <a href="#" class="admin-profile-box d-flex align-items-center text-decoration-none">
+                        <img src="https://ui-avatars.com/api/?name=Admin&background=18181b&color=8b5cf6" alt="Avatar" class="rounded-circle border border-2 avatar-border shadow-sm" width="40" height="40">
+                        <div class="ms-2 d-none d-md-block text-start">
+                            <div class="fw-bold text-light mb-0" style="font-size: 0.95rem; line-height: 1.2;" th:text="${session.loggedInUser != null ? session.loggedInUser.tenDangNhap : 'Administrator'}">Admin</div>
+                            <small class="text-muted" style="font-size: 0.75rem;"><i class="fas fa-user-shield me-1"></i> Quản trị viên</small>
+                        </div>
+                    </a>
+
+                    <button class="btn btn-logout-custom d-flex align-items-center gap-2" onclick="confirmLogoutSwal('/logout')">
+                        <i class="fas fa-sign-out-alt"></i> <span class="d-none d-sm-inline">Đăng xuất</span>
+                    </button>
+                </div>
+            </header>
+
+            <main role="main" class="container-fluid flex-grow-1 p-4">
+                <div layout:fragment="content"></div>
+            </main>
+        </div>
+    </div>
+
+    <input type="hidden" id="successMessage" th:value="${successMessage}" />
+    <input type="hidden" id="errorMessage" th:value="${errorMessage}" />
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <script th:src="@{/js/SideBar.js}"></script>
+    <script th:src="@{/js/DangXuat.js}"></script>
+    <script th:src="@{/js/Success.js}"></script>
+    <th:block layout:fragment="scripts"></th:block>
+
+    <script>
+        function openDrawerSidebar() {
+            document.getElementById('adminSidebar').classList.add('active');
+            document.getElementById('sidebarOverlay').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeDrawerSidebar() {
+            document.getElementById('adminSidebar').classList.remove('active');
+            document.getElementById('sidebarOverlay').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    </script>
+</body>
+</html>

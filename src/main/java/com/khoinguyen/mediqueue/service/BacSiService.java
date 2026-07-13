@@ -56,4 +56,9 @@ public class BacSiService {
     public Optional<BacSi> findBySoDienThoai(String soDienThoai) {
         return bacSiRepository.findBySoDienThoai(soDienThoai);
     }
+
+    // Thêm hàm này vào trong class BacSiService
+    public Optional<BacSi> findByTaiKhoan_TenDangNhap(String tenDangNhap) {
+        return bacSiRepository.findByTaiKhoan_TenDangNhap(tenDangNhap);
+    }
 }
