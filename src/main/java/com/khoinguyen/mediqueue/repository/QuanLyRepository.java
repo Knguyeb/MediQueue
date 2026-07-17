@@ -1,6 +1,5 @@
 package com.khoinguyen.mediqueue.repository;
 
-import com.khoinguyen.mediqueue.entity.BacSi;
 import com.khoinguyen.mediqueue.entity.QuanLy;
 
 import java.util.Optional;
